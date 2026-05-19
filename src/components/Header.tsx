@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, Globe, LogIn, UserPlus, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Home, Gamepad2, Folder, Trophy, HelpCircle, Globe, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { label: "Accueil", icon: Home, href: "#accueil" },
@@ -13,6 +16,13 @@ const navItems = [
 export function Header() {
   const [active, setActive] = useState("Accueil");
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/" });
+  };
 
   return (
     <header className="sticky top-0 z-50 px-4 pt-4">
@@ -43,12 +53,25 @@ export function Header() {
           <button className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold hover:bg-accent transition">
             <Globe className="h-4 w-4 text-primary" /> Français
           </button>
-          <button className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
-            <LogIn className="h-4 w-4" /> Se connecter
-          </button>
-          <button className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all">
-            <UserPlus className="h-4 w-4" /> Créer un compte
-          </button>
+          {user ? (
+            <>
+              <Link to="/teacher" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
+                <LayoutDashboard className="h-4 w-4" /> Tableau de bord
+              </Link>
+              <button onClick={logout} className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all">
+                <LogOut className="h-4 w-4" /> Déconnexion
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
+                <LogIn className="h-4 w-4" /> Se connecter
+              </Link>
+              <Link to="/login" className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all">
+                <UserPlus className="h-4 w-4" /> Créer un compte
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -72,8 +95,17 @@ export function Header() {
             </button>
           ))}
           <div className="pt-2 grid grid-cols-2 gap-2">
-            <button className="rounded-xl border border-border px-3 py-2 text-sm font-semibold">Se connecter</button>
-            <button className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold">Créer un compte</button>
+            {user ? (
+              <>
+                <Link to="/teacher" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">Tableau de bord</Link>
+                <button onClick={logout} className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold">Déconnexion</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">Se connecter</Link>
+                <Link to="/login" className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold text-center">Créer un compte</Link>
+              </>
+            )}
           </div>
         </div>
       )}

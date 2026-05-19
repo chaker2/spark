@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { ArrowRight, KeyRound, Lock } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 export function JoinGame() {
   const [code, setCode] = useState("");
   const valid = /^\d{5}$/.test(code);
+  const navigate = useNavigate();
 
   return (
     <section className="px-4 -mt-4 relative z-10">
@@ -22,8 +24,7 @@ export function JoinGame() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!valid) return;
-            // Real-time room join logic goes here once backend is enabled
-            alert(`Connexion à la partie ${code}…`);
+            navigate({ to: "/play/$code", params: { code } });
           }}
           className="mt-6 flex flex-col sm:flex-row gap-3"
         >
