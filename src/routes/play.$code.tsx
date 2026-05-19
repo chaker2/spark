@@ -96,10 +96,7 @@ function PlayPage() {
     }
   };
 
-  const leave = async () => {
-    if (!myPlayerId) return;
-    await supabase.from("room_players").delete().eq("id", myPlayerId);
-    setMyPlayerId(null);
+  const leave = () => {
     navigate({ to: "/" });
   };
 
