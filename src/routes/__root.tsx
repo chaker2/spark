@@ -7,8 +7,6 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Toaster } from "@/components/ui/sonner";
-import "@/i18n";
 
 import appCss from "../styles.css?url";
 
@@ -75,13 +73,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { name: "description", content: "Spark Quiz Hub is a modern, interactive quiz platform for engaging learning and gameplay." },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:description", content: "Spark Quiz Hub is a modern, interactive quiz platform for engaging learning and gameplay." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:description", content: "Spark Quiz Hub is a modern, interactive quiz platform for engaging learning and gameplay." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d89378bf-c2e3-42fd-9c32-913c7c8fa39e/id-preview-330c3944--e3795ec1-23dc-4f97-849d-4f5a331a326b.lovable.app-1779208350221.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d89378bf-c2e3-42fd-9c32-913c7c8fa39e/id-preview-330c3944--e3795ec1-23dc-4f97-849d-4f5a331a326b.lovable.app-1779208350221.png" },
     ],
     links: [
       {
@@ -116,7 +118,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
 }
