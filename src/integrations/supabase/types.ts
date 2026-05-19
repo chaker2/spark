@@ -14,13 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      room_players: {
+        Row: {
+          client_id: string
+          id: string
+          joined_at: string
+          room_id: string
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          client_id: string
+          id?: string
+          joined_at?: string
+          room_id: string
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          client_id?: string
+          id?: string
+          joined_at?: string
+          room_id?: string
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          code: string
+          created_at: string
+          ended_at: string | null
+          host_id: string
+          id: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          ended_at?: string | null
+          host_id: string
+          id?: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          ended_at?: string | null
+          host_id?: string
+          id?: string
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_room_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
