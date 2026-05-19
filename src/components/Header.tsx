@@ -1,23 +1,28 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, Globe, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { SignupModal } from "./SignupModal";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
-const navItems = [
-  { label: "Accueil", icon: Home, href: "#accueil" },
-  { label: "Jeux", icon: Gamepad2, href: "#jeux" },
-  { label: "Mes jeux", icon: Folder, href: "#mes-jeux" },
-  { label: "Classement", icon: Trophy, href: "#classement" },
-  { label: "Aide", icon: HelpCircle, href: "#aide" },
-];
-
 export function Header() {
-  const [active, setActive] = useState("Accueil");
+  const { t } = useTranslation();
+  const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const navItems = [
+    { key: "home", label: t("nav.home"), icon: Home, href: "#accueil" },
+    { key: "games", label: t("nav.games"), icon: Gamepad2, href: "#jeux" },
+    { key: "mygames", label: t("nav.myGames"), icon: Folder, href: "#mes-jeux" },
+    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, href: "#classement" },
+    { key: "help", label: t("nav.help"), icon: HelpCircle, href: "#aide" },
+  ];
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -30,16 +35,14 @@ export function Header() {
         <SparkLogo />
 
         <nav className="hidden lg:flex items-center gap-1 bg-sky-soft rounded-2xl p-1.5">
-          {navItems.map(({ label, icon: Icon }) => {
-            const isActive = active === label;
+          {navItems.map(({ key, label, icon: Icon }) => {
+            const isActive = active === key;
             return (
               <button
-                key={label}
-                onClick={() => setActive(label)}
+                key={key}
+                onClick={() => setActive(key)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  isActive
-                    ? "bg-card text-primary shadow-soft"
-                    : "text-muted-foreground hover:text-foreground"
+                  isActive ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -50,26 +53,27 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <button className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold hover:bg-accent transition">
-            <Globe className="h-4 w-4 text-primary" /> Français
-          </button>
+          <LanguageSwitcher />
           {user ? (
             <>
               <Link to="/teacher" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
-                <LayoutDashboard className="h-4 w-4" /> Tableau de bord
+                <LayoutDashboard className="h-4 w-4" /> {t("auth.dashboard")}
               </Link>
               <button onClick={logout} className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all">
-                <LogOut className="h-4 w-4" /> Déconnexion
+                <LogOut className="h-4 w-4" /> {t("auth.logout")}
               </button>
             </>
           ) : (
             <>
               <Link to="/login" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
-                <LogIn className="h-4 w-4" /> Se connecter
+                <LogIn className="h-4 w-4" /> {t("auth.signIn")}
               </Link>
-              <Link to="/login" className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all">
-                <UserPlus className="h-4 w-4" /> Créer un compte
-              </Link>
+              <button
+                onClick={() => setSignupOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-mint-gradient text-secondary-foreground px-4 py-2 text-sm font-bold shadow-soft hover:shadow-float hover:-translate-y-0.5 transition-all"
+              >
+                <UserPlus className="h-4 w-4" /> {t("auth.createAccount")}
+              </button>
             </>
           )}
         </div>
@@ -85,30 +89,33 @@ export function Header() {
 
       {open && (
         <div className="lg:hidden mx-auto max-w-7xl mt-2 rounded-3xl bg-card border border-border shadow-soft p-3 space-y-1 animate-pop-in">
-          {navItems.map(({ label, icon: Icon }) => (
+          {navItems.map(({ key, label, icon: Icon }) => (
             <button
-              key={label}
-              onClick={() => { setActive(label); setOpen(false); }}
+              key={key}
+              onClick={() => { setActive(key); setOpen(false); }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-foreground hover:bg-sky-soft transition"
             >
               <Icon className="h-4 w-4 text-primary" /> {label}
             </button>
           ))}
+          <div className="px-1 pt-2"><LanguageSwitcher /></div>
           <div className="pt-2 grid grid-cols-2 gap-2">
             {user ? (
               <>
-                <Link to="/teacher" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">Tableau de bord</Link>
-                <button onClick={logout} className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold">Déconnexion</button>
+                <Link to="/teacher" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">{t("auth.dashboard")}</Link>
+                <button onClick={logout} className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold">{t("auth.logout")}</button>
               </>
             ) : (
               <>
-                <Link to="/login" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">Se connecter</Link>
-                <Link to="/login" className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold text-center">Créer un compte</Link>
+                <Link to="/login" className="rounded-xl border border-border px-3 py-2 text-sm font-semibold text-center">{t("auth.signIn")}</Link>
+                <button onClick={() => { setSignupOpen(true); setOpen(false); }} className="rounded-xl bg-mint-gradient px-3 py-2 text-sm font-bold text-center">{t("auth.createAccount")}</button>
               </>
             )}
           </div>
         </div>
       )}
+
+      <SignupModal open={signupOpen} onClose={() => setSignupOpen(false)} />
     </header>
   );
 }

@@ -2,8 +2,10 @@ import mascotBlue from "@/assets/mascot-blue.png";
 import mascotGreen from "@/assets/mascot-green.png";
 import trophy from "@/assets/trophy.png";
 import { Sparkles, HelpCircle, Star, Triangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Hero() {
+  const { t } = useTranslation();
   return (
     <section id="accueil" className="relative overflow-hidden pt-10 pb-20 px-4">
       {/* Floating quiz icons */}
@@ -36,17 +38,17 @@ export function Hero() {
           {/* Center copy */}
           <div className="text-center animate-pop-in">
             <span className="inline-flex items-center gap-2 rounded-full bg-card border border-border px-4 py-1.5 text-xs font-bold text-muted-foreground shadow-soft">
-              <span className="h-2 w-2 rounded-full bg-mint animate-pulse" /> Nouvelle saison disponible
+              <span className="h-2 w-2 rounded-full bg-mint animate-pulse" /> {t("hero.badge")}
             </span>
             <h1 className="mt-5 font-display font-bold text-5xl sm:text-6xl lg:text-7xl leading-[1.05]">
-              <span className="text-gradient-hero">Apprenez. Jouez.</span>
+              <span className="text-gradient-hero">{t("hero.title1")}</span>
               <br />
-              <span className="text-gradient-mint">Gagnez ensemble !</span>
+              <span className="text-gradient-mint">{t("hero.title2")}</span>
             </h1>
             <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
-              Rejoignez des millions de joueurs dans le monde entier et vivez une
-              expérience d'apprentissage amusante et interactive.
+              {t("hero.subtitle")}
             </p>
+
 
             <div className="mt-7 flex items-center justify-center gap-3">
               <div className="flex -space-x-3">
@@ -60,7 +62,7 @@ export function Hero() {
                   </div>
                 ))}
               </div>
-              <span className="font-semibold text-sm">+2M joueurs actifs</span>
+              <span className="font-semibold text-sm">{t("hero.players")}</span>
               <span className="h-2 w-2 rounded-full bg-mint animate-pulse" />
             </div>
           </div>
