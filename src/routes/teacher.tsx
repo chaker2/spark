@@ -163,7 +163,7 @@ function TeacherDashboard() {
 
         {!activeRoom ? (
           <div className="rounded-3xl bg-card border border-border shadow-float p-10 text-center animate-pop-in">
-            <div className="mx-auto h-20 w-20 rounded-3xl bg-primary-gradient grid place-items-center shadow-pop animate-float-y">
+            <div className="mx-auto h-20 w-20 rounded-3xl bg-primary-gradient grid place-items-center shadow-pop animate-float">
               <Sparkles className="h-9 w-9 text-primary-foreground" />
             </div>
             <h2 className="mt-5 font-display text-2xl font-bold">Aucune partie en cours</h2>
