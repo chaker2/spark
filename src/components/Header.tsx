@@ -84,14 +84,15 @@ export function Header() {
 
       {open && (
         <div className="lg:hidden mx-auto max-w-7xl mt-2 rounded-3xl bg-card border border-border shadow-soft p-3 space-y-1 animate-pop-in">
-          {navItems.map(({ key, label, icon: Icon }) => (
-            <button
+          {navItems.map(({ key, label, icon: Icon, to }) => (
+            <Link
               key={key}
-              onClick={() => { setActive(key); setOpen(false); }}
+              to={to}
+              onClick={() => setOpen(false)}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-foreground hover:bg-sky-soft transition"
             >
               <Icon className="h-4 w-4 text-primary" /> {label}
-            </button>
+            </Link>
           ))}
           <div className="px-1 pt-2"><LanguageSwitcher /></div>
           <div className="pt-2 grid grid-cols-2 gap-2">
