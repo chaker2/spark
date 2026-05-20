@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as MyGamesRouteImport } from './routes/my-games'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as PlayCodeRouteImport } from './routes/play.$code'
 const TeacherRoute = TeacherRouteImport.update({
   id: '/teacher',
   path: '/teacher',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyGamesRoute = MyGamesRouteImport.update({
+  id: '/my-games',
+  path: '/my-games',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
+  '/my-games': typeof MyGamesRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
+  '/my-games': typeof MyGamesRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
@@ -60,21 +68,36 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
+  '/my-games': typeof MyGamesRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games' | '/login' | '/teacher' | '/play/$code'
+  fullPaths:
+    | '/'
+    | '/games'
+    | '/login'
+    | '/my-games'
+    | '/teacher'
+    | '/play/$code'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games' | '/login' | '/teacher' | '/play/$code'
-  id: '__root__' | '/' | '/games' | '/login' | '/teacher' | '/play/$code'
+  to: '/' | '/games' | '/login' | '/my-games' | '/teacher' | '/play/$code'
+  id:
+    | '__root__'
+    | '/'
+    | '/games'
+    | '/login'
+    | '/my-games'
+    | '/teacher'
+    | '/play/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesRoute: typeof GamesRoute
   LoginRoute: typeof LoginRoute
+  MyGamesRoute: typeof MyGamesRoute
   TeacherRoute: typeof TeacherRoute
   PlayCodeRoute: typeof PlayCodeRoute
 }
@@ -86,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/teacher'
       fullPath: '/teacher'
       preLoaderRoute: typeof TeacherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-games': {
+      id: '/my-games'
+      path: '/my-games'
+      fullPath: '/my-games'
+      preLoaderRoute: typeof MyGamesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -123,6 +153,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamesRoute: GamesRoute,
   LoginRoute: LoginRoute,
+  MyGamesRoute: MyGamesRoute,
   TeacherRoute: TeacherRoute,
   PlayCodeRoute: PlayCodeRoute,
 }
