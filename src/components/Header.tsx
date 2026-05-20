@@ -10,18 +10,17 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function Header() {
   const { t } = useTranslation();
-  const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
-    { key: "home", label: t("nav.home"), icon: Home, href: "#accueil" },
-    { key: "games", label: t("nav.games"), icon: Gamepad2, href: "#jeux" },
-    { key: "mygames", label: t("nav.myGames"), icon: Folder, href: "#mes-jeux" },
-    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, href: "#classement" },
-    { key: "help", label: t("nav.help"), icon: HelpCircle, href: "#aide" },
+    { key: "home", label: t("nav.home"), icon: Home, to: "/" as const },
+    { key: "games", label: t("nav.games"), icon: Gamepad2, to: "/games" as const },
+    { key: "mygames", label: t("nav.myGames"), icon: Folder, to: "/my-games" as const },
+    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, to: "/ranking" as const },
+    { key: "help", label: t("nav.help"), icon: HelpCircle, to: "/help" as const },
   ];
 
   const logout = async () => {
@@ -35,21 +34,17 @@ export function Header() {
         <SparkLogo />
 
         <nav className="hidden lg:flex items-center gap-1 bg-sky-soft rounded-2xl p-1.5">
-          {navItems.map(({ key, label, icon: Icon }) => {
-            const isActive = active === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setActive(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  isActive ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </button>
-            );
-          })}
+          {navItems.map(({ key, label, icon: Icon, to }) => (
+            <Link
+              key={key}
+              to={to}
+              activeOptions={{ exact: to === "/" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all text-muted-foreground hover:text-foreground data-[status=active]:bg-card data-[status=active]:text-primary data-[status=active]:shadow-soft"
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
@@ -89,14 +84,15 @@ export function Header() {
 
       {open && (
         <div className="lg:hidden mx-auto max-w-7xl mt-2 rounded-3xl bg-card border border-border shadow-soft p-3 space-y-1 animate-pop-in">
-          {navItems.map(({ key, label, icon: Icon }) => (
-            <button
+          {navItems.map(({ key, label, icon: Icon, to }) => (
+            <Link
               key={key}
-              onClick={() => { setActive(key); setOpen(false); }}
+              to={to}
+              onClick={() => setOpen(false)}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-foreground hover:bg-sky-soft transition"
             >
               <Icon className="h-4 w-4 text-primary" /> {label}
-            </button>
+            </Link>
           ))}
           <div className="px-1 pt-2"><LanguageSwitcher /></div>
           <div className="pt-2 grid grid-cols-2 gap-2">
