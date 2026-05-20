@@ -34,21 +34,17 @@ export function Header() {
         <SparkLogo />
 
         <nav className="hidden lg:flex items-center gap-1 bg-sky-soft rounded-2xl p-1.5">
-          {navItems.map(({ key, label, icon: Icon }) => {
-            const isActive = active === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setActive(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  isActive ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </button>
-            );
-          })}
+          {navItems.map(({ key, label, icon: Icon, to }) => (
+            <Link
+              key={key}
+              to={to}
+              activeOptions={{ exact: to === "/" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all text-muted-foreground hover:text-foreground data-[status=active]:bg-card data-[status=active]:text-primary data-[status=active]:shadow-soft"
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
