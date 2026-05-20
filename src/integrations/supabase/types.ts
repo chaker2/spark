@@ -14,6 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
+      choices: {
+        Row: {
+          id: string
+          is_correct: boolean
+          position: number
+          question_id: string
+          text: string
+        }
+        Insert: {
+          id?: string
+          is_correct?: boolean
+          position?: number
+          question_id: string
+          text: string
+        }
+        Update: {
+          id?: string
+          is_correct?: boolean
+          position?: number
+          question_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "choices_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          total_xp: number
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          total_xp?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          total_xp?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          created_at: string
+          id: string
+          points: number
+          position: number
+          quiz_id: string
+          text: string
+          time_limit: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points?: number
+          position?: number
+          quiz_id: string
+          text: string
+          time_limit?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points?: number
+          position?: number
+          quiz_id?: string
+          text?: string
+          time_limit?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          owner_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          owner_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          owner_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      room_answers: {
+        Row: {
+          answered_at: string
+          choice_id: string | null
+          client_id: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          room_id: string
+          score_awarded: number
+          username: string
+        }
+        Insert: {
+          answered_at?: string
+          choice_id?: string | null
+          client_id: string
+          id?: string
+          is_correct?: boolean
+          question_id: string
+          room_id: string
+          score_awarded?: number
+          username: string
+        }
+        Update: {
+          answered_at?: string
+          choice_id?: string | null
+          client_id?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          room_id?: string
+          score_awarded?: number
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_answers_choice_id_fkey"
+            columns: ["choice_id"]
+            isOneToOne: false
+            referencedRelation: "choices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_answers_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_players: {
         Row: {
           client_id: string
@@ -53,31 +241,48 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          current_question_id: string | null
           ended_at: string | null
           host_id: string
           id: string
+          question_started_at: string | null
+          quiz_id: string | null
           started_at: string | null
           status: string
         }
         Insert: {
           code: string
           created_at?: string
+          current_question_id?: string | null
           ended_at?: string | null
           host_id: string
           id?: string
+          question_started_at?: string | null
+          quiz_id?: string | null
           started_at?: string | null
           status?: string
         }
         Update: {
           code?: string
           created_at?: string
+          current_question_id?: string | null
           ended_at?: string | null
           host_id?: string
           id?: string
+          question_started_at?: string | null
+          quiz_id?: string | null
           started_at?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rooms_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
