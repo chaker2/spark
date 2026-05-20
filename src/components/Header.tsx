@@ -10,18 +10,17 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function Header() {
   const { t } = useTranslation();
-  const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
-    { key: "home", label: t("nav.home"), icon: Home, href: "#accueil" },
-    { key: "games", label: t("nav.games"), icon: Gamepad2, href: "#jeux" },
-    { key: "mygames", label: t("nav.myGames"), icon: Folder, href: "#mes-jeux" },
-    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, href: "#classement" },
-    { key: "help", label: t("nav.help"), icon: HelpCircle, href: "#aide" },
+    { key: "home", label: t("nav.home"), icon: Home, to: "/" as const },
+    { key: "games", label: t("nav.games"), icon: Gamepad2, to: "/games" as const },
+    { key: "mygames", label: t("nav.myGames"), icon: Folder, to: "/my-games" as const },
+    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, to: "/ranking" as const },
+    { key: "help", label: t("nav.help"), icon: HelpCircle, to: "/help" as const },
   ];
 
   const logout = async () => {
