@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeacherRouteImport } from './routes/teacher'
+import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as MyGamesRouteImport } from './routes/my-games'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GamesRouteImport } from './routes/games'
@@ -19,6 +20,11 @@ import { Route as PlayCodeRouteImport } from './routes/play.$code'
 const TeacherRoute = TeacherRouteImport.update({
   id: '/teacher',
   path: '/teacher',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyGamesRoute = MyGamesRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
   '/my-games': typeof MyGamesRoute
+  '/ranking': typeof RankingRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
   '/my-games': typeof MyGamesRoute
+  '/ranking': typeof RankingRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/games': typeof GamesRoute
   '/login': typeof LoginRoute
   '/my-games': typeof MyGamesRoute
+  '/ranking': typeof RankingRoute
   '/teacher': typeof TeacherRoute
   '/play/$code': typeof PlayCodeRoute
 }
@@ -79,16 +88,25 @@ export interface FileRouteTypes {
     | '/games'
     | '/login'
     | '/my-games'
+    | '/ranking'
     | '/teacher'
     | '/play/$code'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games' | '/login' | '/my-games' | '/teacher' | '/play/$code'
+  to:
+    | '/'
+    | '/games'
+    | '/login'
+    | '/my-games'
+    | '/ranking'
+    | '/teacher'
+    | '/play/$code'
   id:
     | '__root__'
     | '/'
     | '/games'
     | '/login'
     | '/my-games'
+    | '/ranking'
     | '/teacher'
     | '/play/$code'
   fileRoutesById: FileRoutesById
@@ -98,6 +116,7 @@ export interface RootRouteChildren {
   GamesRoute: typeof GamesRoute
   LoginRoute: typeof LoginRoute
   MyGamesRoute: typeof MyGamesRoute
+  RankingRoute: typeof RankingRoute
   TeacherRoute: typeof TeacherRoute
   PlayCodeRoute: typeof PlayCodeRoute
 }
@@ -109,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/teacher'
       fullPath: '/teacher'
       preLoaderRoute: typeof TeacherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-games': {
@@ -154,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesRoute: GamesRoute,
   LoginRoute: LoginRoute,
   MyGamesRoute: MyGamesRoute,
+  RankingRoute: RankingRoute,
   TeacherRoute: TeacherRoute,
   PlayCodeRoute: PlayCodeRoute,
 }
