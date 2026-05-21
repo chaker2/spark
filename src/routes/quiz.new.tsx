@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Plus, Trash2, Save, Loader2, ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
+import { CATEGORY_KEYS } from "@/lib/categories";
 
 export const Route = createFileRoute("/quiz/new")({
   component: () => <QuizEditor mode="new" />,
@@ -23,6 +24,8 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [lesson, setLesson] = useState("");
+  const [level, setLevel] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [questions, setQuestions] = useState<QDraft[]>([emptyQ()]);
   const [saving, setSaving] = useState(false);
@@ -34,7 +37,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     if (mode !== "edit" || !quizId) return;
     (async () => {
       const { data: q } = await supabase.from("quizzes").select("*").eq("id", quizId).single();
-      if (q) { setTitle(q.title); setDescription(q.description ?? ""); setCategory(q.category ?? ""); setIsPublic(q.is_public); }
+      if (q) { setTitle(q.title); setDescription(q.description ?? ""); setCategory(q.category ?? ""); setLesson((q as any).lesson ?? ""); setLevel((q as any).level ?? ""); setIsPublic(q.is_public); }
       const { data: qs } = await supabase.from("questions").select("*, choices(*)").eq("quiz_id", quizId).order("position");
       if (qs && qs.length) {
         setQuestions(qs.map((row: any) => ({
@@ -57,6 +60,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   const save = async () => {
     if (!user) return;
     if (!title.trim()) return toast.error(t("quizForm.needTitle"));
+    if (!category) return toast.error(t("quizForm.needCategory"));
     if (questions.length === 0) return toast.error(t("quizForm.needQuestion"));
     for (const q of questions) {
       if (!q.text.trim() || q.choices.filter((c) => c.text.trim()).length < 2) return toast.error(t("quizForm.needQuestion"));
@@ -65,12 +69,13 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     setSaving(true);
     try {
       let id = quizId;
+      const payload: any = { title, description, category, lesson, level, is_public: isPublic };
       if (mode === "new") {
-        const { data, error } = await supabase.from("quizzes").insert({ owner_id: user.id, title, description, category, is_public: isPublic }).select().single();
+        const { data, error } = await supabase.from("quizzes").insert({ owner_id: user.id, ...payload }).select().single();
         if (error) throw error;
         id = data.id;
       } else {
-        const { error } = await supabase.from("quizzes").update({ title, description, category, is_public: isPublic }).eq("id", id!);
+        const { error } = await supabase.from("quizzes").update(payload).eq("id", id!);
         if (error) throw error;
         await supabase.from("questions").delete().eq("quiz_id", id!);
       }
@@ -108,12 +113,27 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
           </label>
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="block">
-              <span className="text-sm font-semibold">{t("quizForm.category")}</span>
-              <input value={category} onChange={(e) => setCategory(e.target.value)} maxLength={50} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+              <span className="text-sm font-semibold">{t("quizForm.category")} *</span>
+              <select required value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none">
+                <option value="">{t("quizForm.pickCategory")}</option>
+                {CATEGORY_KEYS.map((k) => (
+                  <option key={k} value={k}>{t(`categories.${k}`)}</option>
+                ))}
+              </select>
             </label>
             <label className="flex items-center gap-3 pt-6">
               <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="h-5 w-5 accent-primary" />
               <span className="font-semibold text-sm">{t("quizForm.public")}</span>
+            </label>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-sm font-semibold">{t("quizForm.lesson")}</span>
+              <input value={lesson} onChange={(e) => setLesson(e.target.value)} maxLength={120} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+            </label>
+            <label className="block">
+              <span className="text-sm font-semibold">{t("quizForm.level")}</span>
+              <input value={level} onChange={(e) => setLevel(e.target.value)} maxLength={60} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
             </label>
           </div>
         </section>

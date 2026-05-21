@@ -47,6 +47,11 @@ const fr = {
     title: "Bibliothèque de quiz", subtitle: "Découvrez et jouez aux quiz créés par la communauté.",
     empty: "Aucun quiz public pour le moment.", by: "Par",
     questions: "questions", play: "Jouer ce quiz", login: "Connectez-vous pour héberger ce quiz",
+    players: "joueurs", lesson: "Leçon", level: "Niveau",
+  },
+  categories: {
+    all: "Tout", arabic: "Langue arabe", english: "Langue anglaise", social: "Études sociales",
+    french: "Langue française", math: "Mathématiques", physics: "Physique", science: "Science", islamic: "Éducation islamique",
   },
   mygames: {
     title: "Mes quiz", subtitle: "Créez, modifiez et lancez vos quiz en direct.",
@@ -63,6 +68,7 @@ const fr = {
     choice: "Choix", save: "Enregistrer", saving: "Enregistrement…",
     saved: "Quiz enregistré", needTitle: "Donnez un titre au quiz",
     needQuestion: "Ajoutez au moins une question", needCorrect: "Chaque question doit avoir une bonne réponse",
+    lesson: "Nom de la leçon", level: "Niveau scolaire", pickCategory: "Choisir une catégorie", needCategory: "Veuillez sélectionner une catégorie",
   },
   ranking: {
     title: "Classement", subtitle: "Les meilleurs joueurs et quiz de la semaine.",
@@ -150,6 +156,11 @@ const en: typeof fr = {
     title: "Quiz library", subtitle: "Discover and play quizzes from the community.",
     empty: "No public quiz yet.", by: "By",
     questions: "questions", play: "Host this quiz", login: "Sign in to host this quiz",
+    players: "players", lesson: "Lesson", level: "Level",
+  },
+  categories: {
+    all: "All", arabic: "Arabic Language", english: "English Language", social: "Social Studies",
+    french: "French Language", math: "Mathematics", physics: "Physics", science: "Science", islamic: "Islamic Education",
   },
   mygames: {
     title: "My quizzes", subtitle: "Create, edit and launch your quizzes live.",
@@ -166,6 +177,7 @@ const en: typeof fr = {
     choice: "Choice", save: "Save", saving: "Saving…",
     saved: "Quiz saved", needTitle: "Give your quiz a title",
     needQuestion: "Add at least one question", needCorrect: "Each question must have a correct answer",
+    lesson: "Lesson name", level: "School level", pickCategory: "Pick a category", needCategory: "Please select a category",
   },
   ranking: {
     title: "Leaderboard", subtitle: "Top players and quizzes of the week.",
@@ -251,6 +263,11 @@ const ar: typeof fr = {
     title: "مكتبة الاختبارات", subtitle: "اكتشف والعب اختبارات المجتمع.",
     empty: "لا يوجد اختبار عام بعد.", by: "بواسطة",
     questions: "أسئلة", play: "استضف هذا الاختبار", login: "سجّل الدخول لاستضافة هذا الاختبار",
+    players: "لاعبين", lesson: "الدرس", level: "المستوى",
+  },
+  categories: {
+    all: "الكل", arabic: "اللغة العربية", english: "اللغة الإنجليزية", social: "الدراسات الاجتماعية",
+    french: "اللغة الفرنسية", math: "الرياضيات", physics: "الفيزياء", science: "العلوم", islamic: "التربية الإسلامية",
   },
   mygames: {
     title: "اختباراتي", subtitle: "أنشئ، عدّل، وأطلق اختباراتك مباشرة.",
@@ -267,6 +284,7 @@ const ar: typeof fr = {
     choice: "خيار", save: "حفظ", saving: "جارٍ الحفظ…",
     saved: "تم حفظ الاختبار", needTitle: "أعطِ الاختبار عنوانًا",
     needQuestion: "أضف سؤالًا واحدًا على الأقل", needCorrect: "يجب أن يحتوي كل سؤال على إجابة صحيحة",
+    lesson: "اسم الدرس", level: "المستوى الدراسي", pickCategory: "اختر فئة", needCategory: "يرجى اختيار فئة",
   },
   ranking: {
     title: "التصنيف", subtitle: "أفضل اللاعبين والاختبارات لهذا الأسبوع.",
