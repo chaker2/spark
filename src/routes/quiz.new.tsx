@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Plus, Trash2, Save, Loader2, ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
+import { CATEGORY_KEYS } from "@/lib/categories";
 
 export const Route = createFileRoute("/quiz/new")({
   component: () => <QuizEditor mode="new" />,
