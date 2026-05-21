@@ -47,6 +47,11 @@ const fr = {
     title: "Bibliothèque de quiz", subtitle: "Découvrez et jouez aux quiz créés par la communauté.",
     empty: "Aucun quiz public pour le moment.", by: "Par",
     questions: "questions", play: "Jouer ce quiz", login: "Connectez-vous pour héberger ce quiz",
+    players: "joueurs", lesson: "Leçon", level: "Niveau",
+  },
+  categories: {
+    all: "Tout", arabic: "Langue arabe", english: "Langue anglaise", social: "Études sociales",
+    french: "Langue française", math: "Mathématiques", physics: "Physique", science: "Science", islamic: "Éducation islamique",
   },
   mygames: {
     title: "Mes quiz", subtitle: "Créez, modifiez et lancez vos quiz en direct.",
