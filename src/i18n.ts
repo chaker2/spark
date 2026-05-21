@@ -329,14 +329,13 @@ export function setLang(code: string) {
   }
 }
 
-// Apply stored language only after React hydration completes.
-if (typeof window !== "undefined") {
-  setTimeout(() => {
-    const stored = localStorage.getItem("spark_lang");
-    if (stored && LANGS.some((l) => l.code === stored) && stored !== "fr") {
-      setLang(stored);
-    }
-  }, 0);
+// Restore stored language — call from a useEffect in the root after hydration.
+export function restoreStoredLang() {
+  if (typeof window === "undefined") return;
+  const stored = localStorage.getItem("spark_lang");
+  if (stored && LANGS.some((l) => l.code === stored) && stored !== i18n.language) {
+    setLang(stored);
+  }
 }
 
 export default i18n;
