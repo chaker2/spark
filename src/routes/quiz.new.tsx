@@ -24,6 +24,8 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [lesson, setLesson] = useState("");
+  const [level, setLevel] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [questions, setQuestions] = useState<QDraft[]>([emptyQ()]);
   const [saving, setSaving] = useState(false);
@@ -35,7 +37,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     if (mode !== "edit" || !quizId) return;
     (async () => {
       const { data: q } = await supabase.from("quizzes").select("*").eq("id", quizId).single();
-      if (q) { setTitle(q.title); setDescription(q.description ?? ""); setCategory(q.category ?? ""); setIsPublic(q.is_public); }
+      if (q) { setTitle(q.title); setDescription(q.description ?? ""); setCategory(q.category ?? ""); setLesson((q as any).lesson ?? ""); setLevel((q as any).level ?? ""); setIsPublic(q.is_public); }
       const { data: qs } = await supabase.from("questions").select("*, choices(*)").eq("quiz_id", quizId).order("position");
       if (qs && qs.length) {
         setQuestions(qs.map((row: any) => ({
