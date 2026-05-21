@@ -155,6 +155,11 @@ const en: typeof fr = {
     title: "Quiz library", subtitle: "Discover and play quizzes from the community.",
     empty: "No public quiz yet.", by: "By",
     questions: "questions", play: "Host this quiz", login: "Sign in to host this quiz",
+    players: "players", lesson: "Lesson", level: "Level",
+  },
+  categories: {
+    all: "All", arabic: "Arabic Language", english: "English Language", social: "Social Studies",
+    french: "French Language", math: "Mathematics", physics: "Physics", science: "Science", islamic: "Islamic Education",
   },
   mygames: {
     title: "My quizzes", subtitle: "Create, edit and launch your quizzes live.",
