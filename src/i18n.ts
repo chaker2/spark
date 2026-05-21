@@ -68,6 +68,7 @@ const fr = {
     choice: "Choix", save: "Enregistrer", saving: "Enregistrement…",
     saved: "Quiz enregistré", needTitle: "Donnez un titre au quiz",
     needQuestion: "Ajoutez au moins une question", needCorrect: "Chaque question doit avoir une bonne réponse",
+    lesson: "Nom de la leçon", level: "Niveau scolaire", pickCategory: "Choisir une catégorie", needCategory: "Veuillez sélectionner une catégorie",
   },
   ranking: {
     title: "Classement", subtitle: "Les meilleurs joueurs et quiz de la semaine.",
