@@ -113,12 +113,27 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
           </label>
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="block">
-              <span className="text-sm font-semibold">{t("quizForm.category")}</span>
-              <input value={category} onChange={(e) => setCategory(e.target.value)} maxLength={50} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+              <span className="text-sm font-semibold">{t("quizForm.category")} *</span>
+              <select required value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none">
+                <option value="">{t("quizForm.pickCategory")}</option>
+                {CATEGORY_KEYS.map((k) => (
+                  <option key={k} value={k}>{t(`categories.${k}`)}</option>
+                ))}
+              </select>
             </label>
             <label className="flex items-center gap-3 pt-6">
               <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="h-5 w-5 accent-primary" />
               <span className="font-semibold text-sm">{t("quizForm.public")}</span>
+            </label>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-sm font-semibold">{t("quizForm.lesson")}</span>
+              <input value={lesson} onChange={(e) => setLesson(e.target.value)} maxLength={120} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+            </label>
+            <label className="block">
+              <span className="text-sm font-semibold">{t("quizForm.level")}</span>
+              <input value={level} onChange={(e) => setLevel(e.target.value)} maxLength={60} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
             </label>
           </div>
         </section>
