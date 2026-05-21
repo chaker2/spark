@@ -316,10 +316,8 @@ const ar: typeof fr = {
 
 const resources = { fr: { translation: fr }, en: { translation: en }, ar: { translation: ar } };
 
-const stored = typeof window !== "undefined" ? localStorage.getItem("spark_lang") : null;
-const initialLang = stored && LANGS.some((l) => l.code === stored) ? stored : "fr";
-
-i18n.use(initReactI18next).init({ resources, lng: initialLang, fallbackLng: "fr", interpolation: { escapeValue: false } });
+// Always initialize with "fr" to match SSR and prevent hydration mismatch.
+i18n.use(initReactI18next).init({ resources, lng: "fr", fallbackLng: "fr", interpolation: { escapeValue: false } });
 
 export function setLang(code: string) {
   i18n.changeLanguage(code);
@@ -331,10 +329,14 @@ export function setLang(code: string) {
   }
 }
 
+// Apply stored language only after React hydration completes.
 if (typeof window !== "undefined") {
-  const lang = LANGS.find((l) => l.code === initialLang);
-  document.documentElement.lang = initialLang;
-  document.documentElement.dir = lang?.dir ?? "ltr";
+  setTimeout(() => {
+    const stored = localStorage.getItem("spark_lang");
+    if (stored && LANGS.some((l) => l.code === stored) && stored !== "fr") {
+      setLang(stored);
+    }
+  }, 0);
 }
 
 export default i18n;
