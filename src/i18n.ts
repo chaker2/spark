@@ -177,6 +177,7 @@ const en: typeof fr = {
     choice: "Choice", save: "Save", saving: "Saving…",
     saved: "Quiz saved", needTitle: "Give your quiz a title",
     needQuestion: "Add at least one question", needCorrect: "Each question must have a correct answer",
+    lesson: "Lesson name", level: "School level", pickCategory: "Pick a category", needCategory: "Please select a category",
   },
   ranking: {
     title: "Leaderboard", subtitle: "Top players and quizzes of the week.",
