@@ -284,6 +284,7 @@ const ar: typeof fr = {
     choice: "خيار", save: "حفظ", saving: "جارٍ الحفظ…",
     saved: "تم حفظ الاختبار", needTitle: "أعطِ الاختبار عنوانًا",
     needQuestion: "أضف سؤالًا واحدًا على الأقل", needCorrect: "يجب أن يحتوي كل سؤال على إجابة صحيحة",
+    lesson: "اسم الدرس", level: "المستوى الدراسي", pickCategory: "اختر فئة", needCategory: "يرجى اختيار فئة",
   },
   ranking: {
     title: "التصنيف", subtitle: "أفضل اللاعبين والاختبارات لهذا الأسبوع.",
