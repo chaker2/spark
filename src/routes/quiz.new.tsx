@@ -60,6 +60,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   const save = async () => {
     if (!user) return;
     if (!title.trim()) return toast.error(t("quizForm.needTitle"));
+    if (!category) return toast.error(t("quizForm.needCategory"));
     if (questions.length === 0) return toast.error(t("quizForm.needQuestion"));
     for (const q of questions) {
       if (!q.text.trim() || q.choices.filter((c) => c.text.trim()).length < 2) return toast.error(t("quizForm.needQuestion"));
@@ -68,12 +69,13 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     setSaving(true);
     try {
       let id = quizId;
+      const payload: any = { title, description, category, lesson, level, is_public: isPublic };
       if (mode === "new") {
-        const { data, error } = await supabase.from("quizzes").insert({ owner_id: user.id, title, description, category, is_public: isPublic }).select().single();
+        const { data, error } = await supabase.from("quizzes").insert({ owner_id: user.id, ...payload }).select().single();
         if (error) throw error;
         id = data.id;
       } else {
-        const { error } = await supabase.from("quizzes").update({ title, description, category, is_public: isPublic }).eq("id", id!);
+        const { error } = await supabase.from("quizzes").update(payload).eq("id", id!);
         if (error) throw error;
         await supabase.from("questions").delete().eq("quiz_id", id!);
       }
