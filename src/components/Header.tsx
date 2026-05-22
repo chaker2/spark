@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
+import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SignupModal } from "./SignupModal";
@@ -14,6 +14,16 @@ export function Header() {
   const [signupOpen, setSignupOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    let cancelled = false;
+    supabase.from("profiles").select("is_admin").eq("id", user.id).maybeSingle().then(({ data }) => {
+      if (!cancelled) setIsAdmin(!!data?.is_admin);
+    });
+    return () => { cancelled = true; };
+  }, [user]);
 
   const navItems = [
     { key: "home", label: t("nav.home"), icon: Home, to: "/" as const },
@@ -51,6 +61,11 @@ export function Header() {
           <LanguageSwitcher />
           {user ? (
             <>
+              {isAdmin && (
+                <Link to="/admin" className="flex items-center gap-2 rounded-xl bg-primary-gradient text-primary-foreground px-3 py-2 text-sm font-bold shadow-soft hover:shadow-float transition">
+                  <Shield className="h-4 w-4" /> Admin
+                </Link>
+              )}
               <Link to="/teacher" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
                 <LayoutDashboard className="h-4 w-4" /> {t("auth.dashboard")}
               </Link>
@@ -94,6 +109,11 @@ export function Header() {
               <Icon className="h-4 w-4 text-primary" /> {label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link to="/admin" onClick={() => setOpen(false)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-primary bg-sky-soft">
+              <Shield className="h-4 w-4" /> Admin
+            </Link>
+          )}
           <div className="px-1 pt-2"><LanguageSwitcher /></div>
           <div className="pt-2 grid grid-cols-2 gap-2">
             {user ? (
