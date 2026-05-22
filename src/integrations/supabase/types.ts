@@ -52,6 +52,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          is_admin: boolean
           total_xp: number
           updated_at: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          is_admin?: boolean
           total_xp?: number
           updated_at?: string
         }
@@ -68,6 +70,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_admin?: boolean
           total_xp?: number
           updated_at?: string
         }
@@ -77,29 +80,35 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          image_url: string | null
           points: number
           position: number
           quiz_id: string
           text: string
           time_limit: number
+          type: string
         }
         Insert: {
           created_at?: string
           id?: string
+          image_url?: string | null
           points?: number
           position?: number
           quiz_id: string
           text: string
           time_limit?: number
+          type?: string
         }
         Update: {
           created_at?: string
           id?: string
+          image_url?: string | null
           points?: number
           position?: number
           quiz_id?: string
           text?: string
           time_limit?: number
+          type?: string
         }
         Relationships: [
           {
@@ -210,6 +219,7 @@ export type Database = {
       }
       room_players: {
         Row: {
+          avatar: string | null
           client_id: string
           id: string
           joined_at: string
@@ -218,6 +228,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          avatar?: string | null
           client_id: string
           id?: string
           joined_at?: string
@@ -226,6 +237,7 @@ export type Database = {
           username: string
         }
         Update: {
+          avatar?: string | null
           client_id?: string
           id?: string
           joined_at?: string
@@ -296,6 +308,7 @@ export type Database = {
     }
     Functions: {
       generate_room_code: { Args: never; Returns: string }
+      is_admin: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
