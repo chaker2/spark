@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX } from "lucide-react";
+import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
