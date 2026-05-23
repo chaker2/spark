@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
+import { PasswordInput } from "@/components/PasswordInput";
 import { ArrowLeft, Loader2, LogIn, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
