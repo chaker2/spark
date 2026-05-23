@@ -81,9 +81,8 @@ function PlayPage() {
       const { data: q } = await supabase.from("questions").select("id, text, time_limit, points, type, image_url").eq("id", room.current_question_id!).single();
       const { data: ch } = await supabase.rpc("get_question_choices", { _question_id: room.current_question_id! });
       if (q) {
-        const choices = (ch as Choice[]) ?? [];
+        const choices: Choice[] = ((ch as any[]) ?? []).map((c) => ({ id: c.id, text: c.text, position: c.pos }));
         setQuestion({ ...(q as any), choices });
-        // Puzzle: shuffle for the student
         if ((q as any).type === "puzzle") {
           setPuzzleOrder([...choices].sort(() => Math.random() - 0.5));
         }
