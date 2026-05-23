@@ -339,6 +339,27 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
             Valider l'ordre
           </button>
         </div>
+      ) : question.type === "written" ? (
+        <div className="space-y-3">
+          <input
+            value={writtenText}
+            onChange={(e) => setWrittenText(e.target.value)}
+            disabled={!!myAnswer || expired}
+            placeholder="Tapez votre réponse…"
+            className="w-full h-14 rounded-2xl border-2 border-border bg-background px-5 text-lg font-semibold text-center focus:outline-none focus:border-primary transition"
+            onKeyDown={(e) => { if (e.key === "Enter" && writtenText.trim()) onWrittenSubmit(writtenText.trim()); }}
+          />
+          <button
+            onClick={() => onWrittenSubmit(writtenText.trim())}
+            disabled={!writtenText.trim() || !!myAnswer || expired}
+            className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop disabled:opacity-60"
+          >
+            Valider
+          </button>
+          {myAnswer && myAnswer.correctText && (
+            <p className="text-center text-sm text-muted-foreground">Réponse attendue : <span className="font-bold text-foreground">{myAnswer.correctText}</span></p>
+          )}
+        </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
           {question.choices.map((c: Choice, i: number) => {
