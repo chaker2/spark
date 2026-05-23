@@ -58,6 +58,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
           id: row.id, text: row.text,
           type: (row.type ?? "multiple_choice") as QuestionType,
           image_url: row.image_url ?? null,
+          expected_answer: row.expected_answer ?? "",
           time_limit: row.time_limit, points: row.points,
           choices: (row.choices ?? []).sort((a: any, b: any) => a.position - b.position).map((c: any) => ({ id: c.id, text: c.text, is_correct: c.is_correct })),
         })));
@@ -67,12 +68,15 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   }, [mode, quizId]);
 
   function emptyQ(type: QuestionType): QDraft {
-    const base = { text: "", type, image_url: null, time_limit: 20, points: 1000 };
+    const base = { text: "", type, image_url: null, expected_answer: "", time_limit: 20, points: 1000 };
     if (type === "true_false") {
       return { ...base, choices: [{ text: "Vrai", is_correct: true }, { text: "Faux", is_correct: false }] };
     }
     if (type === "puzzle") {
       return { ...base, choices: [{ text: "", is_correct: true }, { text: "", is_correct: true }, { text: "", is_correct: true }] };
+    }
+    if (type === "written") {
+      return { ...base, choices: [] };
     }
     return { ...base, choices: [{ text: "", is_correct: true }, { text: "", is_correct: false }, { text: "", is_correct: false }, { text: "", is_correct: false }] };
   }
