@@ -21,16 +21,10 @@ type QDraft = {
   text: string;
   type: QuestionType;
   image_url: string | null;
+  expected_answer: string;
   time_limit: number;
   points: number;
   choices: ChoiceDraft[];
-};
-
-const TYPE_LABELS: Record<QuestionType, string> = {
-  multiple_choice: "Choix multiples",
-  true_false: "Vrai / Faux",
-  puzzle: "Puzzle / Ordre",
-  image: "Question avec image",
 };
 
 export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: string }) {
