@@ -79,6 +79,7 @@ export type Database = {
       questions: {
         Row: {
           created_at: string
+          expected_answer: string | null
           id: string
           image_url: string | null
           points: number
@@ -90,6 +91,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          expected_answer?: string | null
           id?: string
           image_url?: string | null
           points?: number
@@ -101,6 +103,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          expected_answer?: string | null
           id?: string
           image_url?: string | null
           points?: number
@@ -265,6 +268,7 @@ export type Database = {
           id: string
           question_started_at: string | null
           quiz_id: string | null
+          reveal_answer: boolean
           started_at: string | null
           status: string
         }
@@ -277,6 +281,7 @@ export type Database = {
           id?: string
           question_started_at?: string | null
           quiz_id?: string | null
+          reveal_answer?: boolean
           started_at?: string | null
           status?: string
         }
@@ -289,6 +294,7 @@ export type Database = {
           id?: string
           question_started_at?: string | null
           quiz_id?: string | null
+          reveal_answer?: boolean
           started_at?: string | null
           status?: string
         }
@@ -316,7 +322,18 @@ export type Database = {
           total_xp: number
         }[]
       }
+      daitch_mokotoff: { Args: { "": string }; Returns: string[] }
+      dmetaphone: { Args: { "": string }; Returns: string }
+      dmetaphone_alt: { Args: { "": string }; Returns: string }
       generate_room_code: { Args: never; Returns: string }
+      get_answer_distribution: {
+        Args: { _question_id: string; _room_id: string }
+        Returns: {
+          choice_id: string
+          count: number
+          is_correct: boolean
+        }[]
+      }
       get_global_leaderboard: {
         Args: { _since: string }
         Returns: {
@@ -341,22 +358,47 @@ export type Database = {
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_current_user_admin: { Args: never; Returns: boolean }
-      submit_answer: {
-        Args: {
-          _choice_id: string
-          _client_id: string
-          _puzzle_order: string[]
-          _question_id: string
-          _room_id: string
-          _username: string
-        }
-        Returns: {
-          correct_choice_id: string
-          correct_order: string[]
-          is_correct: boolean
-          score_awarded: number
-        }[]
-      }
+      is_display_name_available: { Args: { _name: string }; Returns: boolean }
+      soundex: { Args: { "": string }; Returns: string }
+      submit_answer:
+        | {
+            Args: {
+              _choice_id: string
+              _client_id: string
+              _puzzle_order: string[]
+              _question_id: string
+              _room_id: string
+              _username: string
+            }
+            Returns: {
+              correct_choice_id: string
+              correct_order: string[]
+              is_correct: boolean
+              score_awarded: number
+            }[]
+          }
+        | {
+            Args: {
+              _choice_id: string
+              _client_id: string
+              _puzzle_order: string[]
+              _question_id: string
+              _room_id: string
+              _text_answer?: string
+              _username: string
+            }
+            Returns: {
+              correct_choice_id: string
+              correct_order: string[]
+              correct_text: string
+              is_correct: boolean
+              score_awarded: number
+              similarity: number
+            }[]
+          }
+      text_normalize: { Args: { _s: string }; Returns: string }
+      text_similarity: { Args: { _a: string; _b: string }; Returns: number }
+      text_soundex: { Args: { "": string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
