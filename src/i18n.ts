@@ -266,7 +266,7 @@ const ar: typeof fr = {
     players: "لاعبين", lesson: "الدرس", level: "المستوى",
   },
   categories: {
-    all: "الكل", arabic: "اللغة العربية", english: "اللغة الإنجليزية", social: "الدراسات الاجتماعية",
+    all: "الكل", arabic: "اللغة العربية", english: "اللغة الإنجليزية", social: "الاجتماعيات",
     french: "اللغة الفرنسية", math: "الرياضيات", physics: "الفيزياء", science: "العلوم", islamic: "التربية الإسلامية",
   },
   mygames: {
