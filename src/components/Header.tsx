@@ -66,6 +66,9 @@ export function Header() {
                   <Shield className="h-4 w-4" /> Admin
                 </Link>
               )}
+              <Link to="/profile" className="hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card hover:bg-accent transition" title="Profil">
+                <UserIcon className="h-4 w-4" />
+              </Link>
               <Link to="/teacher" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
                 <LayoutDashboard className="h-4 w-4" /> {t("auth.dashboard")}
               </Link>
