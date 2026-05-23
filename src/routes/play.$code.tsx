@@ -60,9 +60,9 @@ function PlayPage() {
       if (myPlayerId && !list.find((p) => p.id === myPlayerId)) setMyPlayerId(null);
     };
     const loadScores = async () => {
-      const { data } = await supabase.from("room_answers").select("username, score_awarded").eq("room_id", room.id);
+      const { data } = await supabase.rpc("get_room_scoreboard", { _room_id: room.id });
       const map: Record<string, number> = {};
-      (data ?? []).forEach((r: any) => map[r.username] = (map[r.username] ?? 0) + r.score_awarded);
+      (data ?? []).forEach((r: any) => { map[r.username] = r.total; });
       if (!cancelled) setScores(map);
     };
     loadPlayers(); loadScores();
