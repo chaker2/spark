@@ -40,12 +40,12 @@ function AdminPage() {
     (async () => {
       const [q, u, r, a] = await Promise.all([
         supabase.from("quizzes").select("id, title, category, owner_id, is_public, created_at").order("created_at", { ascending: false }).limit(200),
-        supabase.from("profiles").select("id, display_name, total_xp, is_admin").order("total_xp", { ascending: false }).limit(200),
+        supabase.rpc("admin_list_profiles"),
         supabase.from("rooms").select("id, code, status, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("room_answers").select("id", { count: "exact", head: true }),
       ]);
       setQuizzes((q.data as Quiz[]) ?? []);
-      setUsers((u.data as Profile[]) ?? []);
+      setUsers(((u.data as unknown as Profile[]) ?? []));
       setRooms((r.data as Room[]) ?? []);
       setStats({ quizzes: q.data?.length ?? 0, users: u.data?.length ?? 0, rooms: r.data?.length ?? 0, answers: a.count ?? 0 });
     })();
