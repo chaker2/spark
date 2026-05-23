@@ -13,7 +13,7 @@ type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; 
 type Player = { id: string; username: string; avatar: string | null };
 type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
-type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[] };
+type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[]; correctText?: string | null; similarity?: number };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
