@@ -11,8 +11,9 @@ import type { QuestionType } from "@/lib/questionTypes";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
-type Choice = { id: string; text: string; is_correct: boolean; position: number };
+type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
+type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[] };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
