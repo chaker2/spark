@@ -210,7 +210,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
               <div className="grid sm:grid-cols-2 gap-3 mb-3">
                 <label className="block text-xs font-semibold">Type
                   <select value={q.type} onChange={(e) => setType(qi, e.target.value as QuestionType)} className="mt-1 w-full h-10 rounded-lg border-2 border-border bg-background px-3 focus:border-primary focus:outline-none">
-                    {QUESTION_TYPES.map((tp) => <option key={tp} value={tp}>{TYPE_LABELS[tp]}</option>)}
+                    {QUESTION_TYPES.map((tp) => <option key={tp} value={tp}>{t(`qtype.${tp}`)}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-semibold">{t("quizForm.timeLimit")}
