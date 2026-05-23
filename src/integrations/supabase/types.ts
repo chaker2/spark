@@ -307,6 +307,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_profiles: {
+        Args: never
+        Returns: {
+          display_name: string
+          id: string
+          is_admin: boolean
+          total_xp: number
+        }[]
+      }
       generate_room_code: { Args: never; Returns: string }
       get_global_leaderboard: {
         Args: { _since: string }
@@ -331,6 +340,7 @@ export type Database = {
         }[]
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
+      is_current_user_admin: { Args: never; Returns: boolean }
       submit_answer: {
         Args: {
           _choice_id: string
