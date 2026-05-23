@@ -128,29 +128,32 @@ function PlayPage() {
 
   const answer = async (choice: Choice) => {
     if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
-    const elapsedMs = now - new Date(room.question_started_at!).getTime();
-    const ratio = Math.max(0, 1 - elapsedMs / (question.time_limit * 1000));
-    const awarded = choice.is_correct ? Math.round(question.points * (0.5 + 0.5 * ratio)) : 0;
-    setMyAnswer({ choiceId: choice.id, isCorrect: choice.is_correct });
-    await supabase.from("room_answers").insert({
-      room_id: room.id, question_id: question.id, client_id: getClientId(),
-      username: me.username, choice_id: choice.id, is_correct: choice.is_correct, score_awarded: awarded,
+    const { data, error } = await supabase.rpc("submit_answer", {
+      _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
+      _username: me.username, _choice_id: choice.id, _puzzle_order: null,
+    });
+    if (error) { toast.error(error.message); return; }
+    const r = (Array.isArray(data) ? data[0] : data) as any;
+    setMyAnswer({
+      choiceId: choice.id,
+      isCorrect: !!r?.is_correct,
+      correctChoiceId: r?.correct_choice_id ?? null,
+      correctOrder: r?.correct_order ?? [],
     });
   };
 
   const submitPuzzle = async () => {
     if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
-    // Correct order = original choices sorted by position
-    const correct = [...question.choices].sort((a, b) => a.position - b.position).map((c) => c.id);
-    const my = puzzleOrder.map((c) => c.id);
-    const isCorrect = correct.every((id, i) => my[i] === id);
-    const elapsedMs = now - new Date(room.question_started_at!).getTime();
-    const ratio = Math.max(0, 1 - elapsedMs / (question.time_limit * 1000));
-    const awarded = isCorrect ? Math.round(question.points * (0.5 + 0.5 * ratio)) : 0;
-    setMyAnswer({ isCorrect });
-    await supabase.from("room_answers").insert({
-      room_id: room.id, question_id: question.id, client_id: getClientId(),
-      username: me.username, choice_id: null, is_correct: isCorrect, score_awarded: awarded,
+    const { data, error } = await supabase.rpc("submit_answer", {
+      _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
+      _username: me.username, _choice_id: null, _puzzle_order: puzzleOrder.map((c) => c.id),
+    });
+    if (error) { toast.error(error.message); return; }
+    const r = (Array.isArray(data) ? data[0] : data) as any;
+    setMyAnswer({
+      isCorrect: !!r?.is_correct,
+      correctChoiceId: r?.correct_choice_id ?? null,
+      correctOrder: r?.correct_order ?? [],
     });
   };
 
