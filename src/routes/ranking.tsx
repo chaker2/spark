@@ -22,12 +22,10 @@ function RankingPage() {
 
   useEffect(() => {
     (async () => {
-      // Aggregate top players from room_answers (this week)
+      // Aggregate top players via server-side RPC (raw answers are protected)
       const since = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
-      const { data: ans } = await supabase.from("room_answers").select("username, score_awarded, answered_at, room_id").gte("answered_at", since);
-      const byUser = new Map<string, number>();
-      (ans ?? []).forEach((r: any) => byUser.set(r.username, (byUser.get(r.username) ?? 0) + r.score_awarded));
-      const tops = [...byUser.entries()].map(([username, total]) => ({ username, total })).sort((a, b) => b.total - a.total).slice(0, 10);
+      const { data: ans } = await supabase.rpc("get_global_leaderboard", { _since: since });
+      const tops = ((ans as any[]) ?? []).map((r) => ({ username: r.username, total: r.total })).slice(0, 10);
       setPlayers(tops);
 
       // Top quizzes by number of rooms hosted

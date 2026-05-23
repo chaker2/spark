@@ -11,8 +11,9 @@ import type { QuestionType } from "@/lib/questionTypes";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
-type Choice = { id: string; text: string; is_correct: boolean; position: number };
+type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
+type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[] };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
@@ -34,7 +35,7 @@ function PlayPage() {
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
-  const [myAnswer, setMyAnswer] = useState<{ choiceId?: string; isCorrect: boolean } | null>(null);
+  const [myAnswer, setMyAnswer] = useState<AnswerResult | null>(null);
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
@@ -59,30 +60,30 @@ function PlayPage() {
       if (myPlayerId && !list.find((p) => p.id === myPlayerId)) setMyPlayerId(null);
     };
     const loadScores = async () => {
-      const { data } = await supabase.from("room_answers").select("username, score_awarded").eq("room_id", room.id);
+      const { data } = await supabase.rpc("get_room_scoreboard", { _room_id: room.id });
       const map: Record<string, number> = {};
-      (data ?? []).forEach((r: any) => map[r.username] = (map[r.username] ?? 0) + r.score_awarded);
+      (data ?? []).forEach((r: any) => { map[r.username] = r.total; });
       if (!cancelled) setScores(map);
     };
     loadPlayers(); loadScores();
     const ch = supabase.channel(`p-${room.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${room.id}` }, loadPlayers)
-      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadScores)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => setRoom((r) => r ? { ...r, ...(p.new as Room) } : r))
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => { setRoom((r) => r ? { ...r, ...(p.new as Room) } : r); loadScores(); })
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, () => setRoom((r) => r ? { ...r, status: "ended" } : r))
       .subscribe();
-    return () => { cancelled = true; supabase.removeChannel(ch); };
+    // Raw room_answers is host-only; players poll scoreboard.
+    const poll = setInterval(loadScores, 3000);
+    return () => { cancelled = true; clearInterval(poll); supabase.removeChannel(ch); };
   }, [room?.id, myPlayerId]);
 
   useEffect(() => {
     if (!room?.current_question_id) { setQuestion(null); setMyAnswer(null); setPuzzleOrder([]); return; }
     (async () => {
       const { data: q } = await supabase.from("questions").select("id, text, time_limit, points, type, image_url").eq("id", room.current_question_id!).single();
-      const { data: ch } = await supabase.from("choices").select("id, text, is_correct, position").eq("question_id", room.current_question_id!).order("position");
+      const { data: ch } = await supabase.rpc("get_question_choices", { _question_id: room.current_question_id! });
       if (q) {
-        const choices = (ch as Choice[]) ?? [];
+        const choices: Choice[] = ((ch as any[]) ?? []).map((c) => ({ id: c.id, text: c.text, position: c.pos }));
         setQuestion({ ...(q as any), choices });
-        // Puzzle: shuffle for the student
         if ((q as any).type === "puzzle") {
           setPuzzleOrder([...choices].sort(() => Math.random() - 0.5));
         }
@@ -128,29 +129,32 @@ function PlayPage() {
 
   const answer = async (choice: Choice) => {
     if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
-    const elapsedMs = now - new Date(room.question_started_at!).getTime();
-    const ratio = Math.max(0, 1 - elapsedMs / (question.time_limit * 1000));
-    const awarded = choice.is_correct ? Math.round(question.points * (0.5 + 0.5 * ratio)) : 0;
-    setMyAnswer({ choiceId: choice.id, isCorrect: choice.is_correct });
-    await supabase.from("room_answers").insert({
-      room_id: room.id, question_id: question.id, client_id: getClientId(),
-      username: me.username, choice_id: choice.id, is_correct: choice.is_correct, score_awarded: awarded,
+    const { data, error } = await supabase.rpc("submit_answer", {
+      _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
+      _username: me.username, _choice_id: choice.id, _puzzle_order: [],
+    } as any);
+    if (error) { toast.error(error.message); return; }
+    const r = (Array.isArray(data) ? data[0] : data) as any;
+    setMyAnswer({
+      choiceId: choice.id,
+      isCorrect: !!r?.is_correct,
+      correctChoiceId: r?.correct_choice_id ?? null,
+      correctOrder: r?.correct_order ?? [],
     });
   };
 
   const submitPuzzle = async () => {
     if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
-    // Correct order = original choices sorted by position
-    const correct = [...question.choices].sort((a, b) => a.position - b.position).map((c) => c.id);
-    const my = puzzleOrder.map((c) => c.id);
-    const isCorrect = correct.every((id, i) => my[i] === id);
-    const elapsedMs = now - new Date(room.question_started_at!).getTime();
-    const ratio = Math.max(0, 1 - elapsedMs / (question.time_limit * 1000));
-    const awarded = isCorrect ? Math.round(question.points * (0.5 + 0.5 * ratio)) : 0;
-    setMyAnswer({ isCorrect });
-    await supabase.from("room_answers").insert({
-      room_id: room.id, question_id: question.id, client_id: getClientId(),
-      username: me.username, choice_id: null, is_correct: isCorrect, score_awarded: awarded,
+    const { data, error } = await supabase.rpc("submit_answer", {
+      _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
+      _username: me.username, _choice_id: undefined as any, _puzzle_order: puzzleOrder.map((c) => c.id),
+    } as any);
+    if (error) { toast.error(error.message); return; }
+    const r = (Array.isArray(data) ? data[0] : data) as any;
+    setMyAnswer({
+      isCorrect: !!r?.is_correct,
+      correctChoiceId: r?.correct_choice_id ?? null,
+      correctOrder: r?.correct_order ?? [],
     });
   };
 
@@ -290,8 +294,8 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
         <div className="grid grid-cols-2 gap-3">
           {question.choices.map((c: Choice, i: number) => {
             const picked = myAnswer?.choiceId === c.id;
-            const reveal = (myAnswer || expired) && c.is_correct;
-            const wrong = picked && !c.is_correct;
+            const reveal = !!myAnswer && myAnswer.correctChoiceId === c.id;
+            const wrong = picked && !myAnswer?.isCorrect;
             return (
               <button key={c.id} onClick={() => onAnswer(c)} disabled={!!myAnswer || expired}
                 className={`h-24 rounded-3xl font-display font-bold text-2xl text-white shadow-pop transition-all hover:-translate-y-0.5 disabled:hover:translate-y-0 ${i === 0 ? "bg-[oklch(0.78_0.15_160)]" : "bg-[oklch(0.7_0.18_25)]"} ${reveal ? "ring-4 ring-mint" : ""} ${wrong ? "opacity-60" : ""}`}>
@@ -319,8 +323,8 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
         <div className="grid sm:grid-cols-2 gap-3">
           {question.choices.map((c: Choice, i: number) => {
             const picked = myAnswer?.choiceId === c.id;
-            const reveal = (myAnswer || expired) && c.is_correct;
-            const wrong = picked && !c.is_correct;
+            const reveal = !!myAnswer && myAnswer.correctChoiceId === c.id;
+            const wrong = picked && !myAnswer?.isCorrect;
             return (
               <button key={c.id} onClick={() => onAnswer(c)} disabled={!!myAnswer || expired}
                 className={`relative min-h-20 rounded-2xl px-5 py-4 text-left font-bold text-white shadow-pop transition-all hover:-translate-y-0.5 disabled:hover:translate-y-0 ${CHOICE_COLORS[i % 4]} ${reveal ? "ring-4 ring-mint" : ""} ${wrong ? "opacity-60" : ""}`}>

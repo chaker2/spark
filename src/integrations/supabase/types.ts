@@ -308,7 +308,45 @@ export type Database = {
     }
     Functions: {
       generate_room_code: { Args: never; Returns: string }
+      get_global_leaderboard: {
+        Args: { _since: string }
+        Returns: {
+          total: number
+          username: string
+        }[]
+      }
+      get_question_choices: {
+        Args: { _question_id: string }
+        Returns: {
+          id: string
+          pos: number
+          text: string
+        }[]
+      }
+      get_room_scoreboard: {
+        Args: { _room_id: string }
+        Returns: {
+          total: number
+          username: string
+        }[]
+      }
       is_admin: { Args: { _uid: string }; Returns: boolean }
+      submit_answer: {
+        Args: {
+          _choice_id: string
+          _client_id: string
+          _puzzle_order: string[]
+          _question_id: string
+          _room_id: string
+          _username: string
+        }
+        Returns: {
+          correct_choice_id: string
+          correct_order: string[]
+          is_correct: boolean
+          score_awarded: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
