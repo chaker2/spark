@@ -113,7 +113,9 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     for (const q of questions) {
       if (!q.text.trim()) return toast.error(t("quizForm.needQuestion"));
       if (q.type === "image" && !q.image_url) return toast.error("Ajoutez une image pour les questions de type Image");
-      if (q.type === "puzzle") {
+      if (q.type === "written") {
+        if (!q.expected_answer.trim()) return toast.error("Écrivez la réponse attendue");
+      } else if (q.type === "puzzle") {
         if (q.choices.filter((c) => c.text.trim()).length < 2) return toast.error("Le puzzle doit avoir au moins 2 éléments");
       } else {
         if (q.choices.filter((c) => c.text.trim()).length < 2) return toast.error(t("quizForm.needQuestion"));
