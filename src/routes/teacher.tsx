@@ -101,7 +101,13 @@ function TeacherDashboard() {
     if (!room) return;
     const next = questions[currentIdx + 1];
     if (!next) return endGame();
-    await supabase.from("rooms").update({ current_question_id: next.id, question_started_at: new Date().toISOString() }).eq("id", room.id);
+    await supabase.from("rooms").update({ current_question_id: next.id, question_started_at: new Date().toISOString(), reveal_answer: false }).eq("id", room.id);
+  };
+
+  const revealAnswer = async () => {
+    if (!room) return;
+    await supabase.from("rooms").update({ reveal_answer: true }).eq("id", room.id);
+    toast.success(t("teacher.revealAnswer"));
   };
 
   const endGame = async () => {
