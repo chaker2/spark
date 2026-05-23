@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield } from "lucide-react";
+import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield, User as UserIcon } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SignupModal } from "./SignupModal";
