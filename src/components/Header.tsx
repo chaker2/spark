@@ -19,8 +19,8 @@ export function Header() {
   useEffect(() => {
     if (!user) { setIsAdmin(false); return; }
     let cancelled = false;
-    supabase.from("profiles").select("is_admin").eq("id", user.id).maybeSingle().then(({ data }) => {
-      if (!cancelled) setIsAdmin(!!data?.is_admin);
+    supabase.rpc("is_current_user_admin").then(({ data }) => {
+      if (!cancelled) setIsAdmin(!!data);
     });
     return () => { cancelled = true; };
   }, [user]);
