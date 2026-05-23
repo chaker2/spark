@@ -35,7 +35,7 @@ function PlayPage() {
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
-  const [myAnswer, setMyAnswer] = useState<{ choiceId?: string; isCorrect: boolean } | null>(null);
+  const [myAnswer, setMyAnswer] = useState<AnswerResult | null>(null);
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
