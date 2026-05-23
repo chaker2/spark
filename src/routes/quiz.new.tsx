@@ -139,6 +139,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
         const q = questions[i];
         const { data: qrow, error: qe } = await supabase.from("questions").insert({
           quiz_id: id!, position: i, text: q.text, type: q.type, image_url: q.image_url,
+          expected_answer: q.type === "written" ? q.expected_answer.trim() : null,
           time_limit: q.time_limit, points: q.points,
         }).select().single();
         if (qe) throw qe;
