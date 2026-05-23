@@ -7,7 +7,7 @@ import { SparkLogo } from "@/components/SparkLogo";
 import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX, Eye } from "lucide-react";
 import { toast } from "sonner";
 
-type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
+type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null; reveal_answer?: boolean };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
 type Quiz = { id: string; title: string };
 type Question = { id: string; position: number; text: string; time_limit: number; points: number; type: string; image_url: string | null };
