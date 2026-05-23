@@ -79,7 +79,7 @@ function PlayPage() {
     if (!room?.current_question_id) { setQuestion(null); setMyAnswer(null); setPuzzleOrder([]); return; }
     (async () => {
       const { data: q } = await supabase.from("questions").select("id, text, time_limit, points, type, image_url").eq("id", room.current_question_id!).single();
-      const { data: ch } = await supabase.from("choices").select("id, text, is_correct, position").eq("question_id", room.current_question_id!).order("position");
+      const { data: ch } = await supabase.rpc("get_question_choices", { _question_id: room.current_question_id! });
       if (q) {
         const choices = (ch as Choice[]) ?? [];
         setQuestion({ ...(q as any), choices });
