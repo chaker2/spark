@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield } from "lucide-react";
+import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield, User as UserIcon } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SignupModal } from "./SignupModal";
@@ -66,6 +66,9 @@ export function Header() {
                   <Shield className="h-4 w-4" /> Admin
                 </Link>
               )}
+              <Link to="/profile" className="hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card hover:bg-accent transition" title="Profil">
+                <UserIcon className="h-4 w-4" />
+              </Link>
               <Link to="/teacher" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-accent transition">
                 <LayoutDashboard className="h-4 w-4" /> {t("auth.dashboard")}
               </Link>

@@ -118,6 +118,7 @@ function RootComponent() {
 
   React.useEffect(() => {
     import("@/i18n").then(({ restoreStoredLang }) => restoreStoredLang());
+    import("@/lib/notify").then(({ installNetworkListeners }) => installNetworkListeners());
   }, []);
 
   return (

@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX } from "lucide-react";
+import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX, Eye } from "lucide-react";
 import { toast } from "sonner";
 
-type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
+type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null; reveal_answer?: boolean };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
 type Quiz = { id: string; title: string };
 type Question = { id: string; position: number; text: string; time_limit: number; points: number; type: string; image_url: string | null };
@@ -101,7 +101,13 @@ function TeacherDashboard() {
     if (!room) return;
     const next = questions[currentIdx + 1];
     if (!next) return endGame();
-    await supabase.from("rooms").update({ current_question_id: next.id, question_started_at: new Date().toISOString() }).eq("id", room.id);
+    await supabase.from("rooms").update({ current_question_id: next.id, question_started_at: new Date().toISOString(), reveal_answer: false }).eq("id", room.id);
+  };
+
+  const revealAnswer = async () => {
+    if (!room) return;
+    await supabase.from("rooms").update({ reveal_answer: true }).eq("id", room.id);
+    toast.success(t("teacher.revealAnswer"));
   };
 
   const endGame = async () => {
@@ -197,16 +203,26 @@ function TeacherDashboard() {
           </div>
         ) : room.status === "active" && currentQ ? (
           <div className="space-y-6 animate-pop-in">
+            {/* Always-visible large game code banner */}
+            <div className="rounded-3xl bg-card/90 backdrop-blur border border-border shadow-float p-4 sm:p-5 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest hidden sm:block">{t("teacher.gameCode")}</p>
+                <div className="font-display text-3xl sm:text-5xl font-bold tracking-[0.25em] bg-clip-text text-transparent bg-primary-gradient tabular-nums">{room.code}</div>
+              </div>
+              <button onClick={copyCode} className="inline-flex items-center gap-2 rounded-xl bg-sky-soft text-primary px-3 py-2 text-sm font-bold whitespace-nowrap"><Copy className="h-4 w-4" /> <span className="hidden sm:inline">{t("teacher.copy")}</span></button>
+            </div>
+
             <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-8">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold text-muted-foreground">{t("play.question")} {currentIdx + 1} / {questions.length}</span>
-                <span className="font-display text-xl sm:text-2xl font-bold text-primary">{room.code}</span>
+                {room.reveal_answer && <span className="text-xs font-bold text-mint bg-mint/10 px-3 py-1 rounded-full">✓ {t("teacher.revealAnswer")}</span>}
               </div>
               {currentQ.type === "image" && currentQ.image_url && (
-                <img src={currentQ.image_url} alt="" className="mb-3 w-full max-h-56 object-contain rounded-2xl bg-sky-soft" />
+                <img src={currentQ.image_url} alt="" className="mb-3 w-full max-h-72 object-contain rounded-2xl bg-sky-soft" />
               )}
-              <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">{currentQ.text}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+              <h2 className="font-display text-2xl sm:text-4xl font-bold mb-3">{currentQ.text}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                <button onClick={revealAnswer} disabled={room.reveal_answer} className="h-12 rounded-2xl border-2 border-primary text-primary font-bold hover:bg-primary/10 transition flex items-center justify-center gap-2 disabled:opacity-50"><Eye className="h-4 w-4" /> {t("teacher.revealAnswer")}</button>
                 {currentIdx < questions.length - 1 ? (
                   <button onClick={nextQuestion} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2"><SkipForward className="h-4 w-4" /> {t("teacher.next")}</button>
                 ) : (

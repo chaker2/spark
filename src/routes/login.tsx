@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
+import { PasswordInput } from "@/components/PasswordInput";
 import { ArrowLeft, Loader2, LogIn, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -77,14 +78,12 @@ function LoginPage() {
               placeholder="email@ecole.fr"
               className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
             />
-            <input
-              type="password"
+            <PasswordInput
               required
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mot de passe (min. 6 caractères)"
-              className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
             />
             <button
               type="submit"

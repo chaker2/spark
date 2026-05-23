@@ -21,16 +21,10 @@ type QDraft = {
   text: string;
   type: QuestionType;
   image_url: string | null;
+  expected_answer: string;
   time_limit: number;
   points: number;
   choices: ChoiceDraft[];
-};
-
-const TYPE_LABELS: Record<QuestionType, string> = {
-  multiple_choice: "Choix multiples",
-  true_false: "Vrai / Faux",
-  puzzle: "Puzzle / Ordre",
-  image: "Question avec image",
 };
 
 export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: string }) {
@@ -64,6 +58,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
           id: row.id, text: row.text,
           type: (row.type ?? "multiple_choice") as QuestionType,
           image_url: row.image_url ?? null,
+          expected_answer: row.expected_answer ?? "",
           time_limit: row.time_limit, points: row.points,
           choices: (row.choices ?? []).sort((a: any, b: any) => a.position - b.position).map((c: any) => ({ id: c.id, text: c.text, is_correct: c.is_correct })),
         })));
@@ -73,12 +68,15 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
   }, [mode, quizId]);
 
   function emptyQ(type: QuestionType): QDraft {
-    const base = { text: "", type, image_url: null, time_limit: 20, points: 1000 };
+    const base = { text: "", type, image_url: null, expected_answer: "", time_limit: 20, points: 1000 };
     if (type === "true_false") {
       return { ...base, choices: [{ text: "Vrai", is_correct: true }, { text: "Faux", is_correct: false }] };
     }
     if (type === "puzzle") {
       return { ...base, choices: [{ text: "", is_correct: true }, { text: "", is_correct: true }, { text: "", is_correct: true }] };
+    }
+    if (type === "written") {
+      return { ...base, choices: [] };
     }
     return { ...base, choices: [{ text: "", is_correct: true }, { text: "", is_correct: false }, { text: "", is_correct: false }, { text: "", is_correct: false }] };
   }
@@ -115,7 +113,9 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
     for (const q of questions) {
       if (!q.text.trim()) return toast.error(t("quizForm.needQuestion"));
       if (q.type === "image" && !q.image_url) return toast.error("Ajoutez une image pour les questions de type Image");
-      if (q.type === "puzzle") {
+      if (q.type === "written") {
+        if (!q.expected_answer.trim()) return toast.error("Écrivez la réponse attendue");
+      } else if (q.type === "puzzle") {
         if (q.choices.filter((c) => c.text.trim()).length < 2) return toast.error("Le puzzle doit avoir au moins 2 éléments");
       } else {
         if (q.choices.filter((c) => c.text.trim()).length < 2) return toast.error(t("quizForm.needQuestion"));
@@ -139,6 +139,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
         const q = questions[i];
         const { data: qrow, error: qe } = await supabase.from("questions").insert({
           quiz_id: id!, position: i, text: q.text, type: q.type, image_url: q.image_url,
+          expected_answer: q.type === "written" ? q.expected_answer.trim() : null,
           time_limit: q.time_limit, points: q.points,
         }).select().single();
         if (qe) throw qe;
@@ -209,7 +210,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
               <div className="grid sm:grid-cols-2 gap-3 mb-3">
                 <label className="block text-xs font-semibold">Type
                   <select value={q.type} onChange={(e) => setType(qi, e.target.value as QuestionType)} className="mt-1 w-full h-10 rounded-lg border-2 border-border bg-background px-3 focus:border-primary focus:outline-none">
-                    {QUESTION_TYPES.map((tp) => <option key={tp} value={tp}>{TYPE_LABELS[tp]}</option>)}
+                    {QUESTION_TYPES.map((tp) => <option key={tp} value={tp}>{t(`qtype.${tp}`)}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-semibold">{t("quizForm.timeLimit")}
@@ -263,6 +264,13 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
                     </div>
                   ))}
                   <button onClick={() => setQ(qi, { choices: [...q.choices, { text: "", is_correct: true }] })} disabled={q.choices.length >= 6} className="text-sm font-semibold text-primary hover:underline disabled:opacity-50">+ Ajouter un élément</button>
+                </div>
+              ) : q.type === "written" ? (
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold">Réponse attendue
+                    <input value={q.expected_answer} onChange={(e) => setQ(qi, { expected_answer: e.target.value })} placeholder="Mot, concept ou courte phrase" className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+                  </label>
+                  <p className="text-xs text-muted-foreground">Le système accepte les fautes mineures, les accents et la casse. Fonctionne en arabe, français et anglais.</p>
                 </div>
               ) : (
                 <div className="space-y-2">

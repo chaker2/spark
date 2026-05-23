@@ -13,7 +13,7 @@ type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; 
 type Player = { id: string; username: string; avatar: string | null };
 type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
-type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[] };
+type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[]; correctText?: string | null; similarity?: number };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
@@ -158,6 +158,24 @@ function PlayPage() {
     });
   };
 
+  const submitWritten = async (text: string) => {
+    if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
+    const { data, error } = await supabase.rpc("submit_answer", {
+      _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
+      _username: me.username, _choice_id: undefined as any, _puzzle_order: [],
+      _text_answer: text,
+    } as any);
+    if (error) { toast.error(error.message); return; }
+    const r = (Array.isArray(data) ? data[0] : data) as any;
+    setMyAnswer({
+      isCorrect: !!r?.is_correct,
+      correctChoiceId: null,
+      correctOrder: [],
+      correctText: r?.correct_text ?? null,
+      similarity: r?.similarity ?? 0,
+    });
+  };
+
   const movePuzzle = (i: number, dir: -1 | 1) => {
     if (myAnswer) return;
     const arr = [...puzzleOrder];
@@ -225,6 +243,7 @@ function PlayPage() {
           <QuestionView
             question={question} timeLeft={timeLeft} myAnswer={myAnswer}
             onAnswer={answer} onPuzzleSubmit={submitPuzzle} onPuzzleMove={movePuzzle}
+            onWrittenSubmit={submitWritten}
             puzzleOrder={puzzleOrder} myScore={myScore} t={t}
           />
         ) : room.status === "active" ? (
@@ -270,7 +289,8 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
   );
 }
 
-function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleMove, puzzleOrder, myScore, t }: any) {
+function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleMove, onWrittenSubmit, puzzleOrder, myScore, t }: any) {
+  const [writtenText, setWrittenText] = useState("");
   const expired = timeLeft <= 0;
   return (
     <div className="space-y-4 animate-pop-in">
@@ -318,6 +338,27 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
           <button onClick={onPuzzleSubmit} disabled={!!myAnswer || expired} className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop disabled:opacity-60">
             Valider l'ordre
           </button>
+        </div>
+      ) : question.type === "written" ? (
+        <div className="space-y-3">
+          <input
+            value={writtenText}
+            onChange={(e) => setWrittenText(e.target.value)}
+            disabled={!!myAnswer || expired}
+            placeholder="Tapez votre réponse…"
+            className="w-full h-14 rounded-2xl border-2 border-border bg-background px-5 text-lg font-semibold text-center focus:outline-none focus:border-primary transition"
+            onKeyDown={(e) => { if (e.key === "Enter" && writtenText.trim()) onWrittenSubmit(writtenText.trim()); }}
+          />
+          <button
+            onClick={() => onWrittenSubmit(writtenText.trim())}
+            disabled={!writtenText.trim() || !!myAnswer || expired}
+            className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop disabled:opacity-60"
+          >
+            Valider
+          </button>
+          {myAnswer && myAnswer.correctText && (
+            <p className="text-center text-sm text-muted-foreground">Réponse attendue : <span className="font-bold text-foreground">{myAnswer.correctText}</span></p>
+          )}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
