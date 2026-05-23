@@ -68,11 +68,12 @@ function PlayPage() {
     loadPlayers(); loadScores();
     const ch = supabase.channel(`p-${room.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${room.id}` }, loadPlayers)
-      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadScores)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => setRoom((r) => r ? { ...r, ...(p.new as Room) } : r))
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => { setRoom((r) => r ? { ...r, ...(p.new as Room) } : r); loadScores(); })
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, () => setRoom((r) => r ? { ...r, status: "ended" } : r))
       .subscribe();
-    return () => { cancelled = true; supabase.removeChannel(ch); };
+    // Raw room_answers is host-only; players poll scoreboard.
+    const poll = setInterval(loadScores, 3000);
+    return () => { cancelled = true; clearInterval(poll); supabase.removeChannel(ch); };
   }, [room?.id, myPlayerId]);
 
   useEffect(() => {
