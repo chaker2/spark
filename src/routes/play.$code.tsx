@@ -293,8 +293,8 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
         <div className="grid grid-cols-2 gap-3">
           {question.choices.map((c: Choice, i: number) => {
             const picked = myAnswer?.choiceId === c.id;
-            const reveal = (myAnswer || expired) && c.is_correct;
-            const wrong = picked && !c.is_correct;
+            const reveal = !!myAnswer && myAnswer.correctChoiceId === c.id;
+            const wrong = picked && !myAnswer?.isCorrect;
             return (
               <button key={c.id} onClick={() => onAnswer(c)} disabled={!!myAnswer || expired}
                 className={`h-24 rounded-3xl font-display font-bold text-2xl text-white shadow-pop transition-all hover:-translate-y-0.5 disabled:hover:translate-y-0 ${i === 0 ? "bg-[oklch(0.78_0.15_160)]" : "bg-[oklch(0.7_0.18_25)]"} ${reveal ? "ring-4 ring-mint" : ""} ${wrong ? "opacity-60" : ""}`}>
