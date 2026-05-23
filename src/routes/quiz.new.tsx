@@ -265,6 +265,13 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
                   ))}
                   <button onClick={() => setQ(qi, { choices: [...q.choices, { text: "", is_correct: true }] })} disabled={q.choices.length >= 6} className="text-sm font-semibold text-primary hover:underline disabled:opacity-50">+ Ajouter un élément</button>
                 </div>
+              ) : q.type === "written" ? (
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold">Réponse attendue
+                    <input value={q.expected_answer} onChange={(e) => setQ(qi, { expected_answer: e.target.value })} placeholder="Mot, concept ou courte phrase" className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-4 focus:border-primary focus:outline-none" />
+                  </label>
+                  <p className="text-xs text-muted-foreground">Le système accepte les fautes mineures, les accents et la casse. Fonctionne en arabe, français et anglais.</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {q.choices.map((c, ci) => (
