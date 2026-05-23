@@ -146,8 +146,8 @@ function PlayPage() {
     if (!room || !question || !me || myAnswer || timeLeft <= 0) return;
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id, _question_id: question.id, _client_id: getClientId(),
-      _username: me.username, _choice_id: null, _puzzle_order: puzzleOrder.map((c) => c.id),
-    });
+      _username: me.username, _choice_id: undefined as any, _puzzle_order: puzzleOrder.map((c) => c.id),
+    } as any);
     if (error) { toast.error(error.message); return; }
     const r = (Array.isArray(data) ? data[0] : data) as any;
     setMyAnswer({
