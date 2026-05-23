@@ -243,6 +243,7 @@ function PlayPage() {
           <QuestionView
             question={question} timeLeft={timeLeft} myAnswer={myAnswer}
             onAnswer={answer} onPuzzleSubmit={submitPuzzle} onPuzzleMove={movePuzzle}
+            onWrittenSubmit={submitWritten}
             puzzleOrder={puzzleOrder} myScore={myScore} t={t}
           />
         ) : room.status === "active" ? (
