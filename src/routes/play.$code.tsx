@@ -41,6 +41,15 @@ function PlayPage() {
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [category, setCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!room?.quiz_id) return;
+    (async () => {
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
+      setCategory((data as any)?.category ?? null);
+    })();
+  }, [room?.quiz_id]);
 
   useEffect(() => {
     (async () => {
