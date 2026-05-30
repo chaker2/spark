@@ -261,6 +261,7 @@ const en: typeof fr = {
     needPlayers: "Add at least one player to start", roomCreated: "Game created — code",
     started: "Game started!", ended: "Game ended",
     revealAnswer: "Reveal answer", endQuestion: "End question", showStats: "Show stats",
+    distribution: "Answer distribution", answered: "answered",
   },
   qtype: {
     multiple_choice: "Multiple choice", true_false: "True / False", puzzle: "Puzzle / Order",
