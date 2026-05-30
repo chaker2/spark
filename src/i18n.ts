@@ -117,6 +117,7 @@ const fr = {
     needPlayers: "Ajoutez au moins un joueur pour lancer", roomCreated: "Partie créée — code",
     started: "Partie lancée !", ended: "Partie terminée",
     revealAnswer: "Révéler la réponse", endQuestion: "Terminer la question", showStats: "Voir les statistiques",
+    distribution: "Répartition des réponses", answered: "ont répondu",
   },
   qtype: {
     multiple_choice: "Choix multiples", true_false: "Vrai / Faux", puzzle: "Puzzle / Ordre",
@@ -260,6 +261,7 @@ const en: typeof fr = {
     needPlayers: "Add at least one player to start", roomCreated: "Game created — code",
     started: "Game started!", ended: "Game ended",
     revealAnswer: "Reveal answer", endQuestion: "End question", showStats: "Show stats",
+    distribution: "Answer distribution", answered: "answered",
   },
   qtype: {
     multiple_choice: "Multiple choice", true_false: "True / False", puzzle: "Puzzle / Order",
@@ -400,6 +402,7 @@ const ar: typeof fr = {
     needPlayers: "أضف لاعبًا واحدًا على الأقل للبدء", roomCreated: "تم إنشاء اللعبة — الرمز",
     started: "بدأت اللعبة!", ended: "انتهت اللعبة",
     revealAnswer: "كشف الإجابة", endQuestion: "إنهاء السؤال", showStats: "عرض الإحصائيات",
+    distribution: "توزيع الإجابات", answered: "أجابوا",
   },
   qtype: {
     multiple_choice: "اختيار من متعدد", true_false: "صح / خطأ", puzzle: "ترتيب",

@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
 import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { CategoryBackground } from "@/components/CategoryBackground";
+import { AnswerDistribution } from "@/components/AnswerDistribution";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null; reveal_answer?: boolean };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
@@ -28,6 +30,15 @@ function TeacherDashboard() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [creating, setCreating] = useState(false);
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [category, setCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!room?.quiz_id) { setCategory(null); return; }
+    (async () => {
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
+      setCategory((data as any)?.category ?? null);
+    })();
+  }, [room?.quiz_id]);
 
   useEffect(() => { if (!loading && !user) navigate({ to: "/login" }); }, [user, loading, navigate]);
 
@@ -144,7 +155,9 @@ function TeacherDashboard() {
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="min-h-screen bg-sky-gradient">
+    <div className="min-h-screen bg-sky-gradient relative">
+      <CategoryBackground category={category} />
+      <div className="relative">
       <header className="sticky top-0 z-50 px-4 pt-4">
         <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
           <SparkLogo />
@@ -231,7 +244,18 @@ function TeacherDashboard() {
                 <button onClick={closeRoom} className="h-12 rounded-2xl border-2 border-destructive text-destructive font-bold hover:bg-destructive/10 transition">{t("teacher.end")}</button>
               </div>
             </div>
-            <Leaderboard sorted={sorted} players={players} t={t} />
+            <div className="grid lg:grid-cols-2 gap-6">
+              {currentQ.type !== "written" && (
+                <AnswerDistribution
+                  roomId={room.id}
+                  questionId={currentQ.id}
+                  reveal={!!room.reveal_answer}
+                  totalPlayers={players.length}
+                  t={t}
+                />
+              )}
+              <Leaderboard sorted={sorted} players={players} t={t} />
+            </div>
           </div>
         ) : (
           <div className="space-y-6 animate-pop-in">
@@ -244,6 +268,7 @@ function TeacherDashboard() {
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 }

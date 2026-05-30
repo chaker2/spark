@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getClientId } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { AVATARS, DEFAULT_AVATAR, type Avatar } from "@/lib/avatars";
 import type { QuestionType } from "@/lib/questionTypes";
+import { CategoryBackground } from "@/components/CategoryBackground";
+import { PuzzleSortable } from "@/components/PuzzleSortable";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
@@ -39,6 +41,15 @@ function PlayPage() {
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [category, setCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!room?.quiz_id) return;
+    (async () => {
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
+      setCategory((data as any)?.category ?? null);
+    })();
+  }, [room?.quiz_id]);
 
   useEffect(() => {
     (async () => {
@@ -176,14 +187,7 @@ function PlayPage() {
     });
   };
 
-  const movePuzzle = (i: number, dir: -1 | 1) => {
-    if (myAnswer) return;
-    const arr = [...puzzleOrder];
-    const ni = i + dir;
-    if (ni < 0 || ni >= arr.length) return;
-    [arr[i], arr[ni]] = [arr[ni], arr[i]];
-    setPuzzleOrder(arr);
-  };
+
 
   if (loading) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
@@ -191,7 +195,9 @@ function PlayPage() {
   const myScore = me ? scores[me.username] ?? 0 : 0;
 
   return (
-    <div className="min-h-screen bg-sky-gradient">
+    <div className="min-h-screen bg-sky-gradient relative">
+      <CategoryBackground category={category} />
+      <div className="relative">
       <header className="px-4 pt-4">
         <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
           <SparkLogo />
@@ -242,7 +248,7 @@ function PlayPage() {
         ) : room.status === "active" && question ? (
           <QuestionView
             question={question} timeLeft={timeLeft} myAnswer={myAnswer}
-            onAnswer={answer} onPuzzleSubmit={submitPuzzle} onPuzzleMove={movePuzzle}
+            onAnswer={answer} onPuzzleSubmit={submitPuzzle} onPuzzleReorder={setPuzzleOrder}
             onWrittenSubmit={submitWritten}
             puzzleOrder={puzzleOrder} myScore={myScore} t={t}
           />
@@ -255,6 +261,7 @@ function PlayPage() {
           <Lobby room={room} players={players} myPlayerId={myPlayerId} onLeave={() => navigate({ to: "/" })} t={t} />
         )}
       </main>
+      </div>
     </div>
   );
 }
@@ -289,7 +296,7 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
   );
 }
 
-function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleMove, onWrittenSubmit, puzzleOrder, myScore, t }: any) {
+function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleReorder, onWrittenSubmit, puzzleOrder, myScore, t }: any) {
   const [writtenText, setWrittenText] = useState("");
   const expired = timeLeft <= 0;
   return (
@@ -326,15 +333,12 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
         </div>
       ) : question.type === "puzzle" ? (
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground text-center">Mettez les éléments dans le bon ordre :</p>
-          {puzzleOrder.map((c: Choice, i: number) => (
-            <div key={c.id} className="flex items-center gap-2 bg-card rounded-2xl border-2 border-border p-2">
-              <span className="h-10 w-10 shrink-0 rounded-xl bg-primary-gradient text-primary-foreground font-display font-bold grid place-items-center">{i + 1}</span>
-              <span className="flex-1 font-semibold">{c.text}</span>
-              <button onClick={() => onPuzzleMove(i, -1)} disabled={i === 0 || !!myAnswer || expired} className="h-10 w-10 rounded-xl border-2 border-border grid place-items-center disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
-              <button onClick={() => onPuzzleMove(i, 1)} disabled={i === puzzleOrder.length - 1 || !!myAnswer || expired} className="h-10 w-10 rounded-xl border-2 border-border grid place-items-center disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
-            </div>
-          ))}
+          <p className="text-xs text-muted-foreground text-center">Glissez ou utilisez les flèches pour ordonner :</p>
+          <PuzzleSortable
+            items={puzzleOrder}
+            disabled={!!myAnswer || expired}
+            onReorder={onPuzzleReorder}
+          />
           <button onClick={onPuzzleSubmit} disabled={!!myAnswer || expired} className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop disabled:opacity-60">
             Valider l'ordre
           </button>
