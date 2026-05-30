@@ -268,6 +268,7 @@ function PlayPage() {
           <Lobby room={room} players={players} myPlayerId={myPlayerId} onLeave={() => navigate({ to: "/" })} t={t} />
         )}
       </main>
+      </div>
     </div>
   );
 }
