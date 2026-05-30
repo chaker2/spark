@@ -155,7 +155,9 @@ function TeacherDashboard() {
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="min-h-screen bg-sky-gradient">
+    <div className="min-h-screen bg-sky-gradient relative">
+      <CategoryBackground category={category} />
+      <div className="relative">
       <header className="sticky top-0 z-50 px-4 pt-4">
         <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
           <SparkLogo />
