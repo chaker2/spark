@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getClientId } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { AVATARS, DEFAULT_AVATAR, type Avatar } from "@/lib/avatars";
 import type { QuestionType } from "@/lib/questionTypes";
