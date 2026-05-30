@@ -8,6 +8,8 @@ import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, ArrowUp, Arr
 import { toast } from "sonner";
 import { AVATARS, DEFAULT_AVATAR, type Avatar } from "@/lib/avatars";
 import type { QuestionType } from "@/lib/questionTypes";
+import { CategoryBackground } from "@/components/CategoryBackground";
+import { PuzzleSortable } from "@/components/PuzzleSortable";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
