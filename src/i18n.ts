@@ -117,6 +117,7 @@ const fr = {
     needPlayers: "Ajoutez au moins un joueur pour lancer", roomCreated: "Partie créée — code",
     started: "Partie lancée !", ended: "Partie terminée",
     revealAnswer: "Révéler la réponse", endQuestion: "Terminer la question", showStats: "Voir les statistiques",
+    distribution: "Répartition des réponses", answered: "ont répondu",
   },
   qtype: {
     multiple_choice: "Choix multiples", true_false: "Vrai / Faux", puzzle: "Puzzle / Ordre",
