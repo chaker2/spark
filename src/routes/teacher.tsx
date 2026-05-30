@@ -244,7 +244,18 @@ function TeacherDashboard() {
                 <button onClick={closeRoom} className="h-12 rounded-2xl border-2 border-destructive text-destructive font-bold hover:bg-destructive/10 transition">{t("teacher.end")}</button>
               </div>
             </div>
-            <Leaderboard sorted={sorted} players={players} t={t} />
+            <div className="grid lg:grid-cols-2 gap-6">
+              {currentQ.type !== "written" && (
+                <AnswerDistribution
+                  roomId={room.id}
+                  questionId={currentQ.id}
+                  reveal={!!room.reveal_answer}
+                  totalPlayers={players.length}
+                  t={t}
+                />
+              )}
+              <Leaderboard sorted={sorted} players={players} t={t} />
+            </div>
           </div>
         ) : (
           <div className="space-y-6 animate-pop-in">
