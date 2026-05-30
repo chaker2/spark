@@ -30,6 +30,15 @@ function TeacherDashboard() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [creating, setCreating] = useState(false);
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [category, setCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!room?.quiz_id) { setCategory(null); return; }
+    (async () => {
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
+      setCategory((data as any)?.category ?? null);
+    })();
+  }, [room?.quiz_id]);
 
   useEffect(() => { if (!loading && !user) navigate({ to: "/login" }); }, [user, loading, navigate]);
 
