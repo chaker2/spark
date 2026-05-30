@@ -257,6 +257,7 @@ function TeacherDashboard() {
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 }
