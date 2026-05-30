@@ -402,6 +402,7 @@ const ar: typeof fr = {
     needPlayers: "أضف لاعبًا واحدًا على الأقل للبدء", roomCreated: "تم إنشاء اللعبة — الرمز",
     started: "بدأت اللعبة!", ended: "انتهت اللعبة",
     revealAnswer: "كشف الإجابة", endQuestion: "إنهاء السؤال", showStats: "عرض الإحصائيات",
+    distribution: "توزيع الإجابات", answered: "أجابوا",
   },
   qtype: {
     multiple_choice: "اختيار من متعدد", true_false: "صح / خطأ", puzzle: "ترتيب",
