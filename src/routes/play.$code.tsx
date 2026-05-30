@@ -340,15 +340,12 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
         </div>
       ) : question.type === "puzzle" ? (
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground text-center">Mettez les éléments dans le bon ordre :</p>
-          {puzzleOrder.map((c: Choice, i: number) => (
-            <div key={c.id} className="flex items-center gap-2 bg-card rounded-2xl border-2 border-border p-2">
-              <span className="h-10 w-10 shrink-0 rounded-xl bg-primary-gradient text-primary-foreground font-display font-bold grid place-items-center">{i + 1}</span>
-              <span className="flex-1 font-semibold">{c.text}</span>
-              <button onClick={() => onPuzzleMove(i, -1)} disabled={i === 0 || !!myAnswer || expired} className="h-10 w-10 rounded-xl border-2 border-border grid place-items-center disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
-              <button onClick={() => onPuzzleMove(i, 1)} disabled={i === puzzleOrder.length - 1 || !!myAnswer || expired} className="h-10 w-10 rounded-xl border-2 border-border grid place-items-center disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
-            </div>
-          ))}
+          <p className="text-xs text-muted-foreground text-center">Glissez ou utilisez les flèches pour ordonner :</p>
+          <PuzzleSortable
+            items={puzzleOrder}
+            disabled={!!myAnswer || expired}
+            onReorder={onPuzzleReorder}
+          />
           <button onClick={onPuzzleSubmit} disabled={!!myAnswer || expired} className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop disabled:opacity-60">
             Valider l'ordre
           </button>
