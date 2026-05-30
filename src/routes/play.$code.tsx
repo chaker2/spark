@@ -187,14 +187,7 @@ function PlayPage() {
     });
   };
 
-  const movePuzzle = (i: number, dir: -1 | 1) => {
-    if (myAnswer) return;
-    const arr = [...puzzleOrder];
-    const ni = i + dir;
-    if (ni < 0 || ni >= arr.length) return;
-    [arr[i], arr[ni]] = [arr[ni], arr[i]];
-    setPuzzleOrder(arr);
-  };
+
 
   if (loading) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
