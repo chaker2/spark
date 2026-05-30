@@ -303,7 +303,7 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
   );
 }
 
-function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleMove, onWrittenSubmit, puzzleOrder, myScore, t }: any) {
+function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, onPuzzleReorder, onWrittenSubmit, puzzleOrder, myScore, t }: any) {
   const [writtenText, setWrittenText] = useState("");
   const expired = timeLeft <= 0;
   return (
