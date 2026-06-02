@@ -5,9 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
 import { PasswordInput } from "@/components/PasswordInput";
-import { Loader2, Save, User as UserIcon, Check } from "lucide-react";
+import { Loader2, Save, User as UserIcon, Check, Upload } from "lucide-react";
 import { notify } from "@/lib/notify";
-import { AVATARS, type Avatar } from "@/lib/avatars";
+import {
+  AVATARS,
+  type Avatar,
+  isImageAvatar,
+  resolveAvatarUrl,
+  toImageAvatar,
+  compressImage,
+} from "@/lib/avatars";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
