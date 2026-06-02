@@ -144,7 +144,13 @@ function ProfilePage() {
                   <button key={a} type="button" onClick={() => setAvatar(a)} className={`h-12 rounded-xl text-2xl transition ${avatar === a ? "bg-mint-gradient shadow-pop ring-2 ring-mint scale-110" : "bg-sky-soft hover:scale-105"}`}>{a}</button>
                 ))}
               </div>
+              <label className="mt-3 flex items-center justify-center gap-2 h-11 rounded-2xl border-2 border-dashed border-border cursor-pointer hover:border-primary hover:bg-sky-soft transition text-sm font-semibold">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {t("profile.uploadPhoto")}
+                <input type="file" accept="image/*" className="hidden" onChange={onUpload} disabled={uploading} />
+              </label>
             </div>
+
 
             <label className="block">
               <span className="text-sm font-semibold">{t("profile.email")}</span>
