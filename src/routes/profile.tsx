@@ -115,12 +115,19 @@ function ProfilePage() {
       <main className="max-w-xl mx-auto px-4 py-10">
         <div className="rounded-3xl bg-card border border-border shadow-float p-8 animate-pop-in">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-mint-gradient grid place-items-center text-4xl shadow-pop">{avatar}</div>
+            <div className="h-16 w-16 rounded-2xl bg-mint-gradient grid place-items-center text-4xl shadow-pop overflow-hidden">
+              {isImageAvatar(avatar) && avatarUrl ? (
+                <img src={avatarUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+              ) : (
+                avatar
+              )}
+            </div>
             <div>
               <h1 className="font-display text-2xl font-bold flex items-center gap-2"><UserIcon className="h-5 w-5 text-primary" /> {t("profile.title")}</h1>
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
+
 
           <div className="mt-6 space-y-4">
             <label className="block">
