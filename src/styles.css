@@ -1,25 +1,9 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:wght@400..800&display=swap");
 
 @custom-variant dark (&:is(.dark *));
-
-@layer base {
-  @font-face {
-    font-family: "Fredoka";
-    font-style: normal;
-    font-weight: 300 700;
-    font-display: swap;
-    src: url("https://fonts.gstatic.com/s/fredoka/v14/X7nP4b87HvSqjb_WIi2yDCRwoQ_k7367_B-i2yQag0-mac3O8WGy.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 400 800;
-    font-display: swap;
-    src: url("https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTQ3jw.woff2") format("woff2");
-  }
-}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
