@@ -32,6 +32,8 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [nameStatus, setNameStatus] = useState<"idle" | "ok" | "taken" | "checking">("idle");
   const [initial, setInitial] = useState<{ name: string; avatar: string }>({ name: "", avatar: "🦊" });
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { if (!loading && !user) navigate({ to: "/login" }); }, [user, loading, navigate]);
 
@@ -43,8 +45,32 @@ function ProfilePage() {
       const n = data?.display_name ?? "";
       const a = (data?.avatar as Avatar) ?? "🦊";
       setDisplayName(n); setAvatar(a); setInitial({ name: n, avatar: a });
+      setAvatarUrl(await resolveAvatarUrl(supabase, a));
     })();
   }, [user]);
+
+  const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) return notify.error("upload.failed");
+    setUploading(true);
+    try {
+      const blob = await compressImage(file);
+      const path = `${user.id}/avatar.jpg`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
+      if (error) throw error;
+      const value = toImageAvatar(path);
+      setAvatar(value);
+      setAvatarUrl(await resolveAvatarUrl(supabase, value));
+    } catch (err: any) {
+      notify.raw(err.message, "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (!displayName.trim() || displayName.trim() === initial.name) { setNameStatus("idle"); return; }
