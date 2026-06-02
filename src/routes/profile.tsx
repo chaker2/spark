@@ -1,13 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
 import { PasswordInput } from "@/components/PasswordInput";
-import { Loader2, Save, User as UserIcon, Check } from "lucide-react";
+import { Loader2, Save, User as UserIcon, Check, Upload } from "lucide-react";
 import { notify } from "@/lib/notify";
-import { AVATARS, type Avatar } from "@/lib/avatars";
+import {
+  AVATARS,
+  type Avatar,
+  isImageAvatar,
+  resolveAvatarUrl,
+  toImageAvatar,
+  compressImage,
+} from "@/lib/avatars";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
@@ -25,6 +32,8 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [nameStatus, setNameStatus] = useState<"idle" | "ok" | "taken" | "checking">("idle");
   const [initial, setInitial] = useState<{ name: string; avatar: string }>({ name: "", avatar: "🦊" });
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { if (!loading && !user) navigate({ to: "/login" }); }, [user, loading, navigate]);
 
@@ -36,8 +45,32 @@ function ProfilePage() {
       const n = data?.display_name ?? "";
       const a = (data?.avatar as Avatar) ?? "🦊";
       setDisplayName(n); setAvatar(a); setInitial({ name: n, avatar: a });
+      setAvatarUrl(await resolveAvatarUrl(supabase, a));
     })();
   }, [user]);
+
+  const onUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) return notify.error("upload.failed");
+    setUploading(true);
+    try {
+      const blob = await compressImage(file);
+      const path = `${user.id}/avatar.jpg`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
+      if (error) throw error;
+      const value = toImageAvatar(path);
+      setAvatar(value);
+      setAvatarUrl(await resolveAvatarUrl(supabase, value));
+    } catch (err: any) {
+      notify.raw(err.message, "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (!displayName.trim() || displayName.trim() === initial.name) { setNameStatus("idle"); return; }
@@ -82,12 +115,19 @@ function ProfilePage() {
       <main className="max-w-xl mx-auto px-4 py-10">
         <div className="rounded-3xl bg-card border border-border shadow-float p-8 animate-pop-in">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-mint-gradient grid place-items-center text-4xl shadow-pop">{avatar}</div>
+            <div className="h-16 w-16 rounded-2xl bg-mint-gradient grid place-items-center text-4xl shadow-pop overflow-hidden">
+              {isImageAvatar(avatar) && avatarUrl ? (
+                <img src={avatarUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+              ) : (
+                avatar
+              )}
+            </div>
             <div>
               <h1 className="font-display text-2xl font-bold flex items-center gap-2"><UserIcon className="h-5 w-5 text-primary" /> {t("profile.title")}</h1>
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
+
 
           <div className="mt-6 space-y-4">
             <label className="block">
@@ -104,7 +144,13 @@ function ProfilePage() {
                   <button key={a} type="button" onClick={() => setAvatar(a)} className={`h-12 rounded-xl text-2xl transition ${avatar === a ? "bg-mint-gradient shadow-pop ring-2 ring-mint scale-110" : "bg-sky-soft hover:scale-105"}`}>{a}</button>
                 ))}
               </div>
+              <label className="mt-3 flex items-center justify-center gap-2 h-11 rounded-2xl border-2 border-dashed border-border cursor-pointer hover:border-primary hover:bg-sky-soft transition text-sm font-semibold">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {t("profile.uploadPhoto")}
+                <input type="file" accept="image/*" className="hidden" onChange={onUpload} disabled={uploading} />
+              </label>
             </div>
+
 
             <label className="block">
               <span className="text-sm font-semibold">{t("profile.email")}</span>

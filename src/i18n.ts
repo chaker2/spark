@@ -127,6 +127,7 @@ const fr = {
     title: "Profil", displayName: "Nom d'affichage", email: "Adresse e-mail",
     newPassword: "Nouveau mot de passe", avatar: "Avatar", save: "Enregistrer",
     nameAvailable: "Nom disponible", nameTaken: "Ce nom est déjà pris",
+    uploadPhoto: "Importer une photo",
   },
   notify: {
     "auth.invalid_password": "Mot de passe incorrect",
@@ -271,6 +272,7 @@ const en: typeof fr = {
     title: "Profile", displayName: "Display name", email: "Email",
     newPassword: "New password", avatar: "Avatar", save: "Save",
     nameAvailable: "Name available", nameTaken: "Name already taken",
+    uploadPhoto: "Upload a photo",
   },
   notify: {
     "auth.invalid_password": "Wrong password",
@@ -412,6 +414,7 @@ const ar: typeof fr = {
     title: "الملف الشخصي", displayName: "اسم العرض", email: "البريد الإلكتروني",
     newPassword: "كلمة مرور جديدة", avatar: "الصورة الرمزية", save: "حفظ",
     nameAvailable: "الاسم متاح", nameTaken: "الاسم مأخوذ بالفعل",
+    uploadPhoto: "تحميل صورة",
   },
   notify: {
     "auth.invalid_password": "كلمة مرور غير صحيحة",
