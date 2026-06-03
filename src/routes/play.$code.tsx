@@ -216,7 +216,7 @@ function PlayPage() {
         ) : !myPlayerId && step === "name" ? (
           <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 text-center animate-pop-in">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Code</p>
-            <div className="mt-2 font-display text-4xl sm:text-5xl font-bold tracking-[0.25em] bg-clip-text text-transparent bg-primary-gradient">{room.code}</div>
+            <div className="mt-2 game-code font-display text-4xl sm:text-5xl font-bold tracking-[0.25em] tabular-nums">{room.code}</div>
             <h1 className="mt-6 font-display text-2xl font-bold">{t("play.choosePseudo")}</h1>
             <p className="mt-2 text-muted-foreground text-sm">{t("play.visible")}</p>
             <form onSubmit={join} className="mt-6 flex flex-col gap-3">
