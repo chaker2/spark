@@ -274,6 +274,15 @@ const en: typeof fr = {
     nameAvailable: "Name available", nameTaken: "Name already taken",
     uploadPhoto: "Upload a photo",
   },
+  admin: {
+    title: "Administration", subtitle: "Full control of the platform",
+    accessDenied: "Access denied", accessDeniedDesc: "Administrators only.", back: "Back",
+    tabQuizzes: "Quizzes", tabUsers: "Users", tabRooms: "Rooms", tabStats: "Stats",
+    colTitle: "Title", colCategory: "Category", colPublic: "Public", colName: "Name", colXp: "XP", colAdmin: "Admin", colCode: "Code", colStatus: "Status", colCreated: "Created",
+    noQuiz: "No quiz.", noRoom: "No active room.",
+    confirmDeleteQuiz: "Delete this quiz?", deleted: "Deleted",
+    statQuizzes: "Quizzes", statUsers: "Users", statRooms: "Rooms", statAnswers: "Answers",
+  },
   notify: {
     "auth.invalid_password": "Wrong password",
     "auth.account_not_found": "Account not found",
