@@ -129,6 +129,15 @@ const fr = {
     nameAvailable: "Nom disponible", nameTaken: "Ce nom est déjà pris",
     uploadPhoto: "Importer une photo",
   },
+  admin: {
+    title: "Administration", subtitle: "Contrôle complet de la plateforme",
+    accessDenied: "Accès refusé", accessDeniedDesc: "Réservé aux administrateurs.", back: "Retour",
+    tabQuizzes: "Quiz", tabUsers: "Utilisateurs", tabRooms: "Salles", tabStats: "Stats",
+    colTitle: "Titre", colCategory: "Catégorie", colPublic: "Public", colName: "Nom", colXp: "XP", colAdmin: "Admin", colCode: "Code", colStatus: "Statut", colCreated: "Créée",
+    noQuiz: "Aucun quiz.", noRoom: "Aucune salle active.",
+    confirmDeleteQuiz: "Supprimer ce quiz ?", deleted: "Supprimé",
+    statQuizzes: "Quiz", statUsers: "Utilisateurs", statRooms: "Salles", statAnswers: "Réponses",
+  },
   notify: {
     "auth.invalid_password": "Mot de passe incorrect",
     "auth.account_not_found": "Compte introuvable",
