@@ -416,6 +416,15 @@ const ar: typeof fr = {
     nameAvailable: "الاسم متاح", nameTaken: "الاسم مأخوذ بالفعل",
     uploadPhoto: "تحميل صورة",
   },
+  admin: {
+    title: "الإدارة", subtitle: "تحكم كامل في المنصة",
+    accessDenied: "تم رفض الوصول", accessDeniedDesc: "للمشرفين فقط.", back: "رجوع",
+    tabQuizzes: "الاختبارات", tabUsers: "المستخدمون", tabRooms: "الغرف", tabStats: "إحصائيات",
+    colTitle: "العنوان", colCategory: "الفئة", colPublic: "عام", colName: "الاسم", colXp: "نقاط", colAdmin: "مشرف", colCode: "الرمز", colStatus: "الحالة", colCreated: "أُنشئت",
+    noQuiz: "لا توجد اختبارات.", noRoom: "لا توجد غرف نشطة.",
+    confirmDeleteQuiz: "حذف هذا الاختبار؟", deleted: "تم الحذف",
+    statQuizzes: "الاختبارات", statUsers: "المستخدمون", statRooms: "الغرف", statAnswers: "الإجابات",
+  },
   notify: {
     "auth.invalid_password": "كلمة مرور غير صحيحة",
     "auth.account_not_found": "الحساب غير موجود",
