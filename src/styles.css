@@ -135,6 +135,16 @@
     background-clip: text;
     color: transparent;
   }
+  /* Always-readable game code: solid high-contrast pill, never clipped/invisible */
+  .game-code {
+    display: inline-block;
+    color: oklch(0.62 0.18 250);
+    background: oklch(1 0 0);
+    border: 2px solid oklch(0.62 0.18 250 / 0.25);
+    border-radius: 1rem;
+    padding: 0.5rem 1.25rem;
+    box-shadow: var(--shadow-soft);
+  }
 }
 
 @keyframes float-y {
