@@ -201,7 +201,7 @@ function TeacherDashboard() {
           <div className="grid lg:grid-cols-2 gap-6 animate-pop-in">
             <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-8 text-center">
               <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{t("teacher.gameCode")}</p>
-              <div className="mt-4 font-display text-5xl sm:text-7xl font-bold tracking-[0.2em] sm:tracking-[0.25em] bg-clip-text text-transparent bg-primary-gradient">{room.code}</div>
+              <div className="mt-4 game-code font-display text-5xl sm:text-7xl font-bold tracking-[0.2em] sm:tracking-[0.25em] tabular-nums">{room.code}</div>
               <button onClick={copyCode} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-sky-soft text-primary px-4 py-2 text-sm font-bold"><Copy className="h-4 w-4" /> {t("teacher.copy")}</button>
               <p className="mt-4 text-sm text-muted-foreground">{t("teacher.status")} : <span className="font-bold text-foreground">{t("teacher.waiting")}</span></p>
               <div className="mt-6 grid grid-cols-2 gap-3">
