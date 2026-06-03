@@ -129,6 +129,15 @@ const fr = {
     nameAvailable: "Nom disponible", nameTaken: "Ce nom est déjà pris",
     uploadPhoto: "Importer une photo",
   },
+  admin: {
+    title: "Administration", subtitle: "Contrôle complet de la plateforme",
+    accessDenied: "Accès refusé", accessDeniedDesc: "Réservé aux administrateurs.", back: "Retour",
+    tabQuizzes: "Quiz", tabUsers: "Utilisateurs", tabRooms: "Salles", tabStats: "Stats",
+    colTitle: "Titre", colCategory: "Catégorie", colPublic: "Public", colName: "Nom", colXp: "XP", colAdmin: "Admin", colCode: "Code", colStatus: "Statut", colCreated: "Créée",
+    noQuiz: "Aucun quiz.", noRoom: "Aucune salle active.",
+    confirmDeleteQuiz: "Supprimer ce quiz ?", deleted: "Supprimé",
+    statQuizzes: "Quiz", statUsers: "Utilisateurs", statRooms: "Salles", statAnswers: "Réponses",
+  },
   notify: {
     "auth.invalid_password": "Mot de passe incorrect",
     "auth.account_not_found": "Compte introuvable",
@@ -274,6 +283,15 @@ const en: typeof fr = {
     nameAvailable: "Name available", nameTaken: "Name already taken",
     uploadPhoto: "Upload a photo",
   },
+  admin: {
+    title: "Administration", subtitle: "Full control of the platform",
+    accessDenied: "Access denied", accessDeniedDesc: "Administrators only.", back: "Back",
+    tabQuizzes: "Quizzes", tabUsers: "Users", tabRooms: "Rooms", tabStats: "Stats",
+    colTitle: "Title", colCategory: "Category", colPublic: "Public", colName: "Name", colXp: "XP", colAdmin: "Admin", colCode: "Code", colStatus: "Status", colCreated: "Created",
+    noQuiz: "No quiz.", noRoom: "No active room.",
+    confirmDeleteQuiz: "Delete this quiz?", deleted: "Deleted",
+    statQuizzes: "Quizzes", statUsers: "Users", statRooms: "Rooms", statAnswers: "Answers",
+  },
   notify: {
     "auth.invalid_password": "Wrong password",
     "auth.account_not_found": "Account not found",
@@ -415,6 +433,15 @@ const ar: typeof fr = {
     newPassword: "كلمة مرور جديدة", avatar: "الصورة الرمزية", save: "حفظ",
     nameAvailable: "الاسم متاح", nameTaken: "الاسم مأخوذ بالفعل",
     uploadPhoto: "تحميل صورة",
+  },
+  admin: {
+    title: "الإدارة", subtitle: "تحكم كامل في المنصة",
+    accessDenied: "تم رفض الوصول", accessDeniedDesc: "للمشرفين فقط.", back: "رجوع",
+    tabQuizzes: "الاختبارات", tabUsers: "المستخدمون", tabRooms: "الغرف", tabStats: "إحصائيات",
+    colTitle: "العنوان", colCategory: "الفئة", colPublic: "عام", colName: "الاسم", colXp: "نقاط", colAdmin: "مشرف", colCode: "الرمز", colStatus: "الحالة", colCreated: "أُنشئت",
+    noQuiz: "لا توجد اختبارات.", noRoom: "لا توجد غرف نشطة.",
+    confirmDeleteQuiz: "حذف هذا الاختبار؟", deleted: "تم الحذف",
+    statQuizzes: "الاختبارات", statUsers: "المستخدمون", statRooms: "الغرف", statAnswers: "الإجابات",
   },
   notify: {
     "auth.invalid_password": "كلمة مرور غير صحيحة",
