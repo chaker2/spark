@@ -271,7 +271,7 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
     <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 animate-pop-in">
       <div className="text-center">
         <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{t("play.waitingTitle")}</p>
-        <div className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-[0.25em] bg-clip-text text-transparent bg-primary-gradient">{room.code}</div>
+        <div className="mt-2 game-code font-display text-3xl sm:text-4xl font-bold tracking-[0.25em] tabular-nums">{room.code}</div>
         <div className="mt-6 inline-flex items-center gap-3 rounded-2xl bg-sky-soft px-5 py-3">
           <Loader2 className="h-5 w-5 text-primary animate-spin" />
           <span className="font-semibold text-primary text-sm sm:text-base">{t("play.waitingFor")}</span>
