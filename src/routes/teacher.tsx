@@ -220,7 +220,7 @@ function TeacherDashboard() {
             <div className="rounded-3xl bg-card/90 backdrop-blur border border-border shadow-float p-4 sm:p-5 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest hidden sm:block">{t("teacher.gameCode")}</p>
-                <div className="font-display text-3xl sm:text-5xl font-bold tracking-[0.25em] bg-clip-text text-transparent bg-primary-gradient tabular-nums">{room.code}</div>
+                <div className="game-code font-display text-3xl sm:text-5xl font-bold tracking-[0.25em] tabular-nums">{room.code}</div>
               </div>
               <button onClick={copyCode} className="inline-flex items-center gap-2 rounded-xl bg-sky-soft text-primary px-3 py-2 text-sm font-bold whitespace-nowrap"><Copy className="h-4 w-4" /> <span className="hidden sm:inline">{t("teacher.copy")}</span></button>
             </div>
