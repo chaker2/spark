@@ -349,6 +349,7 @@ export type Database = {
           text: string
         }[]
       }
+      get_quiz_editor_questions: { Args: { _quiz_id: string }; Returns: Json }
       get_room_scoreboard: {
         Args: { _room_id: string }
         Returns: {

@@ -52,7 +52,8 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
         setCategory(q.category ?? ""); setLesson((q as any).lesson ?? "");
         setLevel((q as any).level ?? ""); setIsPublic(q.is_public);
       }
-      const { data: qs } = await supabase.from("questions").select("*, choices(*)").eq("quiz_id", quizId).order("position");
+      const { data: qsRaw } = await supabase.rpc("get_quiz_editor_questions", { _quiz_id: quizId });
+      const qs = (qsRaw as any[]) ?? [];
       if (qs && qs.length) {
         setQuestions(qs.map((row: any) => ({
           id: row.id, text: row.text,
