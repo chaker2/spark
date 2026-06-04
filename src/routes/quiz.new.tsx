@@ -142,7 +142,7 @@ export function QuizEditor({ mode, quizId }: { mode: "new" | "edit"; quizId?: st
           quiz_id: id!, position: i, text: q.text, type: q.type, image_url: q.image_url,
           expected_answer: q.type === "written" ? q.expected_answer.trim() : null,
           time_limit: q.time_limit, points: q.points,
-        }).select().single();
+        }).select("id").single();
         if (qe) throw qe;
         const valid = q.choices.filter((c) => c.text.trim());
         const { error: ce } = await supabase.from("choices").insert(valid.map((c, idx) => ({
