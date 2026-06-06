@@ -468,7 +468,7 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
 }
 
 function FinalRanking({ sorted, me, players, t }: any) {
-  const avatarOf = (name: string) => players.find((p: Player) => p.username === name)?.avatar || "🦊";
+  const avatarOf = (name: string) => players.find((p: Player) => p.username === name)?.avatar ?? null;
   return (
     <div className="space-y-4 animate-pop-in">
       <div className="rounded-3xl bg-card border border-border shadow-float p-8 text-center">
