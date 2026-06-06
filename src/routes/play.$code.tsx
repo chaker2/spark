@@ -149,6 +149,29 @@ function PlayPage() {
     setStep("avatar");
   };
 
+  const uploadAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) return toast.error(t("play.avatarInvalid"));
+    if (file.size > 8 * 1024 * 1024) return toast.error(t("play.avatarTooBig"));
+    setUploading(true);
+    try {
+      const blob = await compressImage(file);
+      const path = `players/${getClientId()}-${Date.now()}.jpg`;
+      const { error } = await supabase.storage.from("avatars").upload(path, blob, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+      if (error) throw error;
+      setAvatar(toImageAvatar(path));
+      toast.success(t("play.avatarUploaded"));
+    } catch (e: any) {
+      toast.error(e.message ?? t("play.avatarInvalid"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+
+
   const confirmAvatar = async () => {
     if (!room) return;
     setJoining(true);
