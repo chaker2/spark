@@ -105,6 +105,7 @@ const fr = {
     timeLeft: "secondes", waitingNext: "En attente de la prochaine question…",
     leaderboard: "Classement", finalRanking: "Classement final", gameEnded: "Partie terminée",
     you: "Vous", points: "pts",
+    uploadPhoto: "Importer une photo", avatarInvalid: "Fichier image invalide", avatarTooBig: "Image trop volumineuse (max 8 Mo)", avatarUploaded: "Photo importée !",
   },
   teacher: {
     selectQuiz: "Sélectionnez un quiz", noQuiz: "Aucun quiz disponible — créez-en un d'abord.",
@@ -259,6 +260,7 @@ const en: typeof fr = {
     timeLeft: "seconds", waitingNext: "Waiting for the next question…",
     leaderboard: "Leaderboard", finalRanking: "Final ranking", gameEnded: "Game over",
     you: "You", points: "pts",
+    uploadPhoto: "Upload a photo", avatarInvalid: "Invalid image file", avatarTooBig: "Image too large (max 8 MB)", avatarUploaded: "Photo uploaded!",
   },
   teacher: {
     selectQuiz: "Select a quiz", noQuiz: "No quiz available — create one first.",
@@ -410,6 +412,7 @@ const ar: typeof fr = {
     timeLeft: "ثوانٍ", waitingNext: "في انتظار السؤال التالي…",
     leaderboard: "التصنيف", finalRanking: "التصنيف النهائي", gameEnded: "انتهت اللعبة",
     you: "أنت", points: "نقطة",
+    uploadPhoto: "تحميل صورة", avatarInvalid: "ملف صورة غير صالح", avatarTooBig: "الصورة كبيرة جدًا (8 ميغابايت كحد أقصى)", avatarUploaded: "تم تحميل الصورة!",
   },
   teacher: {
     selectQuiz: "اختر اختبارًا", noQuiz: "لا يوجد اختبار — أنشئ واحدًا أولاً.",

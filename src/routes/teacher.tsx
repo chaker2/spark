@@ -8,6 +8,7 @@ import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Tro
 import { toast } from "sonner";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { AnswerDistribution } from "@/components/AnswerDistribution";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null; reveal_answer?: boolean };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
@@ -31,6 +32,24 @@ function TeacherDashboard() {
   const [creating, setCreating] = useState(false);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Mobile reliability: refresh state when the tab regains focus / reconnects.
+  useEffect(() => {
+    const refresh = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        setReloadKey((k) => k + 1);
+      }
+    };
+    window.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    return () => {
+      window.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+    };
+  }, []);
 
   useEffect(() => {
     if (!room?.quiz_id) { setCategory(null); return; }
@@ -81,7 +100,7 @@ function TeacherDashboard() {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => setRoom((r) => r ? { ...r, ...(p.new as Room) } : r))
       .subscribe();
     return () => { cancelled = true; supabase.removeChannel(ch); };
-  }, [room?.id]);
+  }, [room?.id, reloadKey]);
 
   const currentIdx = useMemo(() => questions.findIndex((q) => q.id === room?.current_question_id), [questions, room?.current_question_id]);
   const currentQ = currentIdx >= 0 ? questions[currentIdx] : null;
@@ -148,7 +167,17 @@ function TeacherDashboard() {
   };
 
   const copyCode = () => { if (room) { navigator.clipboard.writeText(room.code); toast.success(t("teacher.copy")); } };
-  const logout = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
+  const logout = async () => {
+    // Close any active room so connected students are returned to the home screen
+    // and nobody can join an abandoned room.
+    if (room) {
+      await supabase.from("rooms").update({ status: "ended", ended_at: new Date().toISOString(), current_question_id: null }).eq("id", room.id);
+      await supabase.from("rooms").delete().eq("id", room.id);
+    }
+    await supabase.auth.signOut();
+    navigate({ to: "/" });
+  };
+
 
   if (loading || !user) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
@@ -284,7 +313,7 @@ function PlayersPanel({ players, onKick, t }: { players: Player[]; onKick: (id: 
         {players.length === 0 ? <div className="text-center py-10 text-muted-foreground text-sm">{t("teacher.waitingPlayers")}</div> :
           players.map((p, i) => (
             <div key={p.id} style={{ animationDelay: `${i * 40}ms` }} className="flex items-center gap-3 rounded-2xl bg-sky-soft px-3 py-2 animate-pop-in">
-              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl">{p.avatar || "🦊"}</div>
+              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={p.avatar} /></div>
               <span className="font-semibold flex-1 truncate">{p.username}</span>
               <button onClick={() => onKick(p.id)} className="h-8 w-8 rounded-lg border border-destructive/40 text-destructive grid place-items-center hover:bg-destructive/10" aria-label="Kick"><UserX className="h-4 w-4" /></button>
             </div>
@@ -295,7 +324,7 @@ function PlayersPanel({ players, onKick, t }: { players: Player[]; onKick: (id: 
 }
 
 function Leaderboard({ sorted, players, t }: { sorted: [string, number][]; players: Player[]; t: any }) {
-  const avatarOf = (name: string) => players.find((p) => p.username === name)?.avatar || "🦊";
+  const avatarOf = (name: string) => players.find((p) => p.username === name)?.avatar ?? null;
   return (
     <div className="rounded-3xl bg-card border border-border shadow-float p-6">
       <h3 className="font-display text-xl font-bold mb-3 flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> {t("play.leaderboard")}</h3>
@@ -304,7 +333,7 @@ function Leaderboard({ sorted, players, t }: { sorted: [string, number][]; playe
           {sorted.slice(0, 10).map(([name, total], i) => (
             <li key={name} style={{ animationDelay: `${i * 30}ms` }} className="animate-pop-in flex items-center gap-3 rounded-2xl bg-sky-soft px-4 py-3">
               <span className="w-6 text-center font-bold text-muted-foreground">{i + 1}</span>
-              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl">{avatarOf(name)}</div>
+              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={avatarOf(name)} /></div>
               <span className="font-semibold flex-1 truncate">{name}</span>
               <span className="font-display font-bold text-primary tabular-nums">{total}</span>
             </li>

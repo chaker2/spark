@@ -1,15 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getClientId } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { AVATARS, DEFAULT_AVATAR, type Avatar } from "@/lib/avatars";
+import { AVATARS, DEFAULT_AVATAR, type Avatar, compressImage, toImageAvatar, isImageAvatar } from "@/lib/avatars";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import type { QuestionType } from "@/lib/questionTypes";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { PuzzleSortable } from "@/components/PuzzleSortable";
+
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
@@ -34,6 +36,8 @@ function PlayPage() {
   const [avatar, setAvatar] = useState<Avatar>(DEFAULT_AVATAR);
   const [step, setStep] = useState<"name" | "avatar">("name");
   const [joining, setJoining] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
@@ -42,6 +46,26 @@ function PlayPage() {
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Mobile reliability: when the tab returns to the foreground (phone unlock /
+  // app switch), websockets and timers may have stalled. Force a full refresh.
+  useEffect(() => {
+    const refresh = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        setNow(Date.now());
+        setReloadKey((k) => k + 1);
+      }
+    };
+    window.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    return () => {
+      window.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+    };
+  }, []);
 
   useEffect(() => {
     if (!room?.quiz_id) return;
@@ -52,12 +76,21 @@ function PlayPage() {
   }, [room?.quiz_id]);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const { data } = await supabase.from("rooms").select("*").eq("code", code).in("status", ["waiting", "active"]).maybeSingle();
+      const { data } = await supabase
+        .from("rooms")
+        .select("*")
+        .eq("code", code)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (cancelled) return;
       setRoom((data as Room) ?? null);
       setLoading(false);
     })();
-  }, [code]);
+    return () => { cancelled = true; };
+  }, [code, reloadKey]);
 
   useEffect(() => {
     if (!room) return;
@@ -85,7 +118,7 @@ function PlayPage() {
     // Raw room_answers is host-only; players poll scoreboard.
     const poll = setInterval(loadScores, 3000);
     return () => { cancelled = true; clearInterval(poll); supabase.removeChannel(ch); };
-  }, [room?.id, myPlayerId]);
+  }, [room?.id, myPlayerId, reloadKey]);
 
   useEffect(() => {
     if (!room?.current_question_id) { setQuestion(null); setMyAnswer(null); setPuzzleOrder([]); return; }
@@ -115,6 +148,29 @@ function PlayPage() {
     if (trimmed.length < 2 || trimmed.length > 20) return toast.error(t("play.pseudoLen"));
     setStep("avatar");
   };
+
+  const uploadAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) return toast.error(t("play.avatarInvalid"));
+    if (file.size > 8 * 1024 * 1024) return toast.error(t("play.avatarTooBig"));
+    setUploading(true);
+    try {
+      const blob = await compressImage(file);
+      const path = `players/${getClientId()}-${Date.now()}.jpg`;
+      const { error } = await supabase.storage.from("avatars").upload(path, blob, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+      if (error) throw error;
+      setAvatar(toImageAvatar(path));
+      toast.success(t("play.avatarUploaded"));
+    } catch (e: any) {
+      toast.error(e.message ?? t("play.avatarInvalid"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+
 
   const confirmAvatar = async () => {
     if (!room) return;
@@ -230,12 +286,29 @@ function PlayPage() {
           <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 text-center animate-pop-in">
             <h1 className="font-display text-2xl font-bold">Choisissez votre avatar</h1>
             <p className="mt-2 text-muted-foreground text-sm">Salut <span className="font-bold text-foreground">{username}</span> !</p>
-            <div className="mt-6 mx-auto h-24 w-24 rounded-3xl bg-mint-gradient grid place-items-center text-6xl shadow-pop animate-float">{avatar}</div>
+            <div className="mt-6 mx-auto h-24 w-24 rounded-3xl bg-mint-gradient grid place-items-center text-6xl shadow-pop animate-float overflow-hidden">
+              <PlayerAvatar avatar={avatar} />
+            </div>
             <div className="mt-6 grid grid-cols-4 sm:grid-cols-8 gap-2">
               {AVATARS.map((a) => (
                 <button key={a} onClick={() => setAvatar(a)} className={`h-14 rounded-2xl text-3xl transition ${avatar === a ? "bg-mint-gradient shadow-pop ring-2 ring-mint scale-110" : "bg-sky-soft hover:scale-105"}`}>{a}</button>
               ))}
             </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAvatar(f); e.target.value = ""; }}
+            />
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className={`mt-4 w-full h-12 rounded-2xl border-2 font-bold flex items-center justify-center gap-2 transition disabled:opacity-60 ${isImageAvatar(avatar) ? "border-mint bg-mint/10 text-mint" : "border-border hover:bg-accent"}`}
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {t("play.uploadPhoto")}
+            </button>
+
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button onClick={() => setStep("name")} className="h-12 rounded-2xl border-2 border-border font-bold">Retour</button>
               <button onClick={confirmAvatar} disabled={joining} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2 disabled:opacity-60">
@@ -285,7 +358,7 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto">
           {players.map((p: Player, i: number) => (
             <div key={p.id} style={{ animationDelay: `${i * 30}ms` }} className={`flex items-center gap-2 rounded-2xl px-3 py-2 animate-pop-in ${p.id === myPlayerId ? "bg-mint-gradient text-secondary-foreground" : "bg-sky-soft"}`}>
-              <div className="h-8 w-8 rounded-lg bg-card/60 grid place-items-center text-xl">{p.avatar || "🦊"}</div>
+              <div className="h-8 w-8 rounded-lg bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={p.avatar} /></div>
               <span className="font-semibold text-sm truncate">{p.username}</span>
             </div>
           ))}
@@ -395,7 +468,7 @@ function QuestionView({ question, timeLeft, myAnswer, onAnswer, onPuzzleSubmit, 
 }
 
 function FinalRanking({ sorted, me, players, t }: any) {
-  const avatarOf = (name: string) => players.find((p: Player) => p.username === name)?.avatar || "🦊";
+  const avatarOf = (name: string) => players.find((p: Player) => p.username === name)?.avatar ?? null;
   return (
     <div className="space-y-4 animate-pop-in">
       <div className="rounded-3xl bg-card border border-border shadow-float p-8 text-center">
@@ -409,7 +482,7 @@ function FinalRanking({ sorted, me, players, t }: any) {
             {sorted.map(([name, total]: [string, number], i: number) => (
               <li key={name} style={{ animationDelay: `${i * 50}ms` }} className={`animate-pop-in flex items-center gap-3 rounded-2xl px-4 py-3 ${name === me ? "bg-mint-gradient text-secondary-foreground" : "bg-sky-soft"}`}>
                 <span className="w-6 text-center font-bold">{i + 1}</span>
-                <div className="h-10 w-10 rounded-xl bg-card/60 grid place-items-center text-2xl">{avatarOf(name)}</div>
+                <div className="h-10 w-10 rounded-xl bg-card/60 grid place-items-center text-2xl overflow-hidden shrink-0"><PlayerAvatar avatar={avatarOf(name)} /></div>
                 <span className="font-semibold flex-1 truncate">{name}{name === me && ` (${t("play.you")})`}</span>
                 <span className="font-display font-bold tabular-nums">{total}</span>
               </li>
