@@ -286,12 +286,29 @@ function PlayPage() {
           <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 text-center animate-pop-in">
             <h1 className="font-display text-2xl font-bold">Choisissez votre avatar</h1>
             <p className="mt-2 text-muted-foreground text-sm">Salut <span className="font-bold text-foreground">{username}</span> !</p>
-            <div className="mt-6 mx-auto h-24 w-24 rounded-3xl bg-mint-gradient grid place-items-center text-6xl shadow-pop animate-float">{avatar}</div>
+            <div className="mt-6 mx-auto h-24 w-24 rounded-3xl bg-mint-gradient grid place-items-center text-6xl shadow-pop animate-float overflow-hidden">
+              <PlayerAvatar avatar={avatar} />
+            </div>
             <div className="mt-6 grid grid-cols-4 sm:grid-cols-8 gap-2">
               {AVATARS.map((a) => (
                 <button key={a} onClick={() => setAvatar(a)} className={`h-14 rounded-2xl text-3xl transition ${avatar === a ? "bg-mint-gradient shadow-pop ring-2 ring-mint scale-110" : "bg-sky-soft hover:scale-105"}`}>{a}</button>
               ))}
             </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAvatar(f); e.target.value = ""; }}
+            />
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className={`mt-4 w-full h-12 rounded-2xl border-2 font-bold flex items-center justify-center gap-2 transition disabled:opacity-60 ${isImageAvatar(avatar) ? "border-mint bg-mint/10 text-mint" : "border-border hover:bg-accent"}`}
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {t("play.uploadPhoto")}
+            </button>
+
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button onClick={() => setStep("name")} className="h-12 rounded-2xl border-2 border-border font-bold">Retour</button>
               <button onClick={confirmAvatar} disabled={joining} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2 disabled:opacity-60">
