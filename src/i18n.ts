@@ -260,6 +260,7 @@ const en: typeof fr = {
     timeLeft: "seconds", waitingNext: "Waiting for the next question…",
     leaderboard: "Leaderboard", finalRanking: "Final ranking", gameEnded: "Game over",
     you: "You", points: "pts",
+    uploadPhoto: "Upload a photo", avatarInvalid: "Invalid image file", avatarTooBig: "Image too large (max 8 MB)", avatarUploaded: "Photo uploaded!",
   },
   teacher: {
     selectQuiz: "Select a quiz", noQuiz: "No quiz available — create one first.",
