@@ -313,7 +313,7 @@ function PlayersPanel({ players, onKick, t }: { players: Player[]; onKick: (id: 
         {players.length === 0 ? <div className="text-center py-10 text-muted-foreground text-sm">{t("teacher.waitingPlayers")}</div> :
           players.map((p, i) => (
             <div key={p.id} style={{ animationDelay: `${i * 40}ms` }} className="flex items-center gap-3 rounded-2xl bg-sky-soft px-3 py-2 animate-pop-in">
-              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl">{p.avatar || "🦊"}</div>
+              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={p.avatar} /></div>
               <span className="font-semibold flex-1 truncate">{p.username}</span>
               <button onClick={() => onKick(p.id)} className="h-8 w-8 rounded-lg border border-destructive/40 text-destructive grid place-items-center hover:bg-destructive/10" aria-label="Kick"><UserX className="h-4 w-4" /></button>
             </div>
