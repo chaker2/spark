@@ -72,12 +72,21 @@ function PlayPage() {
   }, [room?.quiz_id]);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const { data } = await supabase.from("rooms").select("*").eq("code", code).in("status", ["waiting", "active"]).maybeSingle();
+      const { data } = await supabase
+        .from("rooms")
+        .select("*")
+        .eq("code", code)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (cancelled) return;
       setRoom((data as Room) ?? null);
       setLoading(false);
     })();
-  }, [code]);
+    return () => { cancelled = true; };
+  }, [code, reloadKey]);
 
   useEffect(() => {
     if (!room) return;
