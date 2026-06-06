@@ -105,6 +105,7 @@ const fr = {
     timeLeft: "secondes", waitingNext: "En attente de la prochaine question…",
     leaderboard: "Classement", finalRanking: "Classement final", gameEnded: "Partie terminée",
     you: "Vous", points: "pts",
+    uploadPhoto: "Importer une photo", avatarInvalid: "Fichier image invalide", avatarTooBig: "Image trop volumineuse (max 8 Mo)", avatarUploaded: "Photo importée !",
   },
   teacher: {
     selectQuiz: "Sélectionnez un quiz", noQuiz: "Aucun quiz disponible — créez-en un d'abord.",
