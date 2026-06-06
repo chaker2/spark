@@ -1,15 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getClientId } from "@/hooks/useAuth";
 import { SparkLogo } from "@/components/SparkLogo";
-import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { AVATARS, DEFAULT_AVATAR, type Avatar } from "@/lib/avatars";
+import { AVATARS, DEFAULT_AVATAR, type Avatar, compressImage, toImageAvatar, isImageAvatar } from "@/lib/avatars";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import type { QuestionType } from "@/lib/questionTypes";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { PuzzleSortable } from "@/components/PuzzleSortable";
+
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null };
 type Player = { id: string; username: string; avatar: string | null };
