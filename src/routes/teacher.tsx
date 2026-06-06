@@ -99,7 +99,7 @@ function TeacherDashboard() {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => setRoom((r) => r ? { ...r, ...(p.new as Room) } : r))
       .subscribe();
     return () => { cancelled = true; supabase.removeChannel(ch); };
-  }, [room?.id]);
+  }, [room?.id, reloadKey]);
 
   const currentIdx = useMemo(() => questions.findIndex((q) => q.id === room?.current_question_id), [questions, room?.current_question_id]);
   const currentQ = currentIdx >= 0 ? questions[currentIdx] : null;
