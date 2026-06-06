@@ -8,6 +8,7 @@ import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Tro
 import { toast } from "sonner";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { AnswerDistribution } from "@/components/AnswerDistribution";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 type Room = { id: string; code: string; status: "waiting" | "active" | "ended"; quiz_id: string | null; current_question_id: string | null; question_started_at: string | null; reveal_answer?: boolean };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
