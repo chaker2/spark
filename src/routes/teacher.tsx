@@ -324,7 +324,7 @@ function PlayersPanel({ players, onKick, t }: { players: Player[]; onKick: (id: 
 }
 
 function Leaderboard({ sorted, players, t }: { sorted: [string, number][]; players: Player[]; t: any }) {
-  const avatarOf = (name: string) => players.find((p) => p.username === name)?.avatar || "🦊";
+  const avatarOf = (name: string) => players.find((p) => p.username === name)?.avatar ?? null;
   return (
     <div className="rounded-3xl bg-card border border-border shadow-float p-6">
       <h3 className="font-display text-xl font-bold mb-3 flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> {t("play.leaderboard")}</h3>
