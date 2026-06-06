@@ -333,7 +333,7 @@ function Leaderboard({ sorted, players, t }: { sorted: [string, number][]; playe
           {sorted.slice(0, 10).map(([name, total], i) => (
             <li key={name} style={{ animationDelay: `${i * 30}ms` }} className="animate-pop-in flex items-center gap-3 rounded-2xl bg-sky-soft px-4 py-3">
               <span className="w-6 text-center font-bold text-muted-foreground">{i + 1}</span>
-              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl">{avatarOf(name)}</div>
+              <div className="h-9 w-9 rounded-xl bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={avatarOf(name)} /></div>
               <span className="font-semibold flex-1 truncate">{name}</span>
               <span className="font-display font-bold text-primary tabular-nums">{total}</span>
             </li>
