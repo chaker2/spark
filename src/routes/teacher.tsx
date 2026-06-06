@@ -31,6 +31,24 @@ function TeacherDashboard() {
   const [creating, setCreating] = useState(false);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Mobile reliability: refresh state when the tab regains focus / reconnects.
+  useEffect(() => {
+    const refresh = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        setReloadKey((k) => k + 1);
+      }
+    };
+    window.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    return () => {
+      window.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+    };
+  }, []);
 
   useEffect(() => {
     if (!room?.quiz_id) { setCategory(null); return; }
