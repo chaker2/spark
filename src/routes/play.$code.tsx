@@ -42,6 +42,26 @@ function PlayPage() {
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Mobile reliability: when the tab returns to the foreground (phone unlock /
+  // app switch), websockets and timers may have stalled. Force a full refresh.
+  useEffect(() => {
+    const refresh = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        setNow(Date.now());
+        setReloadKey((k) => k + 1);
+      }
+    };
+    window.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    return () => {
+      window.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+    };
+  }, []);
 
   useEffect(() => {
     if (!room?.quiz_id) return;
