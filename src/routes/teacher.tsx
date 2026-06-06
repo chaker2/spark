@@ -166,7 +166,32 @@ function TeacherDashboard() {
   };
 
   const copyCode = () => { if (room) { navigator.clipboard.writeText(room.code); toast.success(t("teacher.copy")); } };
-  const logout = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
+  const logout = async () => {
+    // Close any active room so connected students are returned to the home screen
+    // and nobody can join an abandoned room.
+    if (room) {
+      await supabase.from("rooms").update({ status: "ended", ended_at: new Date().toISOString(), current_question_id: null }).eq("id", room.id);
+      await supabase.from("rooms").delete().eq("id", room.id);
+    }
+    await supabase.auth.signOut();
+    navigate({ to: "/" });
+  };
+
+  // Safety net: if the teacher closes the tab while a room is live, end it.
+  useEffect(() => {
+    if (!room) return;
+    const onUnload = () => {
+      const payload = JSON.stringify({ status: "ended", current_question_id: null });
+      try {
+        navigator.sendBeacon?.(
+          `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rooms?id=eq.${room.id}`,
+          new Blob([payload], { type: "application/json" }),
+        );
+      } catch { /* best effort */ }
+    };
+    window.addEventListener("pagehide", onUnload);
+    return () => window.removeEventListener("pagehide", onUnload);
+  }, [room?.id]);
 
   if (loading || !user) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
