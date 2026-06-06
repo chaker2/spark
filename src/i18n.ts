@@ -412,6 +412,7 @@ const ar: typeof fr = {
     timeLeft: "ثوانٍ", waitingNext: "في انتظار السؤال التالي…",
     leaderboard: "التصنيف", finalRanking: "التصنيف النهائي", gameEnded: "انتهت اللعبة",
     you: "أنت", points: "نقطة",
+    uploadPhoto: "تحميل صورة", avatarInvalid: "ملف صورة غير صالح", avatarTooBig: "الصورة كبيرة جدًا (8 ميغابايت كحد أقصى)", avatarUploaded: "تم تحميل الصورة!",
   },
   teacher: {
     selectQuiz: "اختر اختبارًا", noQuiz: "لا يوجد اختبار — أنشئ واحدًا أولاً.",
