@@ -482,7 +482,7 @@ function FinalRanking({ sorted, me, players, t }: any) {
             {sorted.map(([name, total]: [string, number], i: number) => (
               <li key={name} style={{ animationDelay: `${i * 50}ms` }} className={`animate-pop-in flex items-center gap-3 rounded-2xl px-4 py-3 ${name === me ? "bg-mint-gradient text-secondary-foreground" : "bg-sky-soft"}`}>
                 <span className="w-6 text-center font-bold">{i + 1}</span>
-                <div className="h-10 w-10 rounded-xl bg-card/60 grid place-items-center text-2xl">{avatarOf(name)}</div>
+                <div className="h-10 w-10 rounded-xl bg-card/60 grid place-items-center text-2xl overflow-hidden shrink-0"><PlayerAvatar avatar={avatarOf(name)} /></div>
                 <span className="font-semibold flex-1 truncate">{name}{name === me && ` (${t("play.you")})`}</span>
                 <span className="font-display font-bold tabular-nums">{total}</span>
               </li>
