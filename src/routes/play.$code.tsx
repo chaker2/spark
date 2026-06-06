@@ -36,6 +36,8 @@ function PlayPage() {
   const [avatar, setAvatar] = useState<Avatar>(DEFAULT_AVATAR);
   const [step, setStep] = useState<"name" | "avatar">("name");
   const [joining, setJoining] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
