@@ -114,7 +114,7 @@ function PlayPage() {
     // Raw room_answers is host-only; players poll scoreboard.
     const poll = setInterval(loadScores, 3000);
     return () => { cancelled = true; clearInterval(poll); supabase.removeChannel(ch); };
-  }, [room?.id, myPlayerId]);
+  }, [room?.id, myPlayerId, reloadKey]);
 
   useEffect(() => {
     if (!room?.current_question_id) { setQuestion(null); setMyAnswer(null); setPuzzleOrder([]); return; }
