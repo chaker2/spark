@@ -358,7 +358,7 @@ function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto">
           {players.map((p: Player, i: number) => (
             <div key={p.id} style={{ animationDelay: `${i * 30}ms` }} className={`flex items-center gap-2 rounded-2xl px-3 py-2 animate-pop-in ${p.id === myPlayerId ? "bg-mint-gradient text-secondary-foreground" : "bg-sky-soft"}`}>
-              <div className="h-8 w-8 rounded-lg bg-card/60 grid place-items-center text-xl">{p.avatar || "🦊"}</div>
+              <div className="h-8 w-8 rounded-lg bg-card/60 grid place-items-center text-xl overflow-hidden shrink-0"><PlayerAvatar avatar={p.avatar} /></div>
               <span className="font-semibold text-sm truncate">{p.username}</span>
             </div>
           ))}
