@@ -266,6 +266,9 @@ export type Database = {
           ended_at: string | null
           host_id: string
           id: string
+          phase_ends_at: string | null
+          phase_started_at: string | null
+          question_phase: string
           question_started_at: string | null
           quiz_id: string | null
           reveal_answer: boolean
@@ -279,6 +282,9 @@ export type Database = {
           ended_at?: string | null
           host_id: string
           id?: string
+          phase_ends_at?: string | null
+          phase_started_at?: string | null
+          question_phase?: string
           question_started_at?: string | null
           quiz_id?: string | null
           reveal_answer?: boolean
@@ -292,6 +298,9 @@ export type Database = {
           ended_at?: string | null
           host_id?: string
           id?: string
+          phase_ends_at?: string | null
+          phase_started_at?: string | null
+          question_phase?: string
           question_started_at?: string | null
           quiz_id?: string | null
           reveal_answer?: boolean
@@ -322,6 +331,35 @@ export type Database = {
           total_xp: number
         }[]
       }
+      advance_room_phase: {
+        Args: {
+          _duration_seconds?: number
+          _next_phase: string
+          _room_id: string
+        }
+        Returns: {
+          code: string
+          created_at: string
+          current_question_id: string | null
+          ended_at: string | null
+          host_id: string
+          id: string
+          phase_ends_at: string | null
+          phase_started_at: string | null
+          question_phase: string
+          question_started_at: string | null
+          quiz_id: string | null
+          reveal_answer: boolean
+          started_at: string | null
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       daitch_mokotoff: { Args: { "": string }; Returns: string[] }
       dmetaphone: { Args: { "": string }; Returns: string }
       dmetaphone_alt: { Args: { "": string }; Returns: string }
@@ -350,6 +388,13 @@ export type Database = {
         }[]
       }
       get_quiz_editor_questions: { Args: { _quiz_id: string }; Returns: Json }
+      get_room_answer_progress: {
+        Args: { _question_id: string; _room_id: string }
+        Returns: {
+          answered_count: number
+          player_count: number
+        }[]
+      }
       get_room_scoreboard: {
         Args: { _room_id: string }
         Returns: {
@@ -361,6 +406,35 @@ export type Database = {
       is_current_user_admin: { Args: never; Returns: boolean }
       is_display_name_available: { Args: { _name: string }; Returns: boolean }
       soundex: { Args: { "": string }; Returns: string }
+      start_room_question: {
+        Args: {
+          _intro_seconds?: number
+          _question_id: string
+          _room_id: string
+        }
+        Returns: {
+          code: string
+          created_at: string
+          current_question_id: string | null
+          ended_at: string | null
+          host_id: string
+          id: string
+          phase_ends_at: string | null
+          phase_started_at: string | null
+          question_phase: string
+          question_started_at: string | null
+          quiz_id: string | null
+          reveal_answer: boolean
+          started_at: string | null
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       submit_answer:
         | {
             Args: {
