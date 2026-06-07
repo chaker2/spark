@@ -13,7 +13,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 type Quiz = { id: string; title: string; category: string | null; owner_id: string; is_public: boolean; created_at: string };
-type Profile = { id: string; display_name: string | null; total_xp: number; is_admin: boolean };
+type Profile = { id: string; display_name: string | null; is_admin: boolean };
 type Room = { id: string; code: string; status: string; created_at: string };
 
 function AdminPage() {
@@ -181,12 +181,11 @@ function AdminPage() {
         {tab === "users" && (
           <div className="rounded-3xl bg-card border border-border shadow-soft overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-sky-soft text-left"><tr><th className="p-3">{t("admin.colName")}</th><th className="p-3">{t("admin.colXp")}</th><th className="p-3">{t("admin.colAdmin")}</th></tr></thead>
+              <thead className="bg-sky-soft text-left"><tr><th className="p-3">{t("admin.colName")}</th><th className="p-3">{t("admin.colAdmin")}</th></tr></thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id} className="border-t border-border">
                     <td className="p-3 font-semibold">{u.display_name ?? "—"}</td>
-                    <td className="p-3 tabular-nums">{u.total_xp}</td>
                     <td className="p-3">{u.is_admin ? "👑" : "—"}</td>
                   </tr>
                 ))}

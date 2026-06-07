@@ -105,6 +105,10 @@ const fr = {
     timeLeft: "secondes", waitingNext: "En attente de la prochaine question…",
     leaderboard: "Classement", finalRanking: "Classement final", gameEnded: "Partie terminée",
     you: "Vous", points: "pts",
+    questionStarting: "Le compte à rebours de réponse commence…",
+    waitingForOthers: "En attente des autres réponses…",
+    resultsSoon: "Résultat affiché dans un instant…",
+    noAnswer: "Aucune réponse enregistrée pour cette question.",
     uploadPhoto: "Importer une photo", avatarInvalid: "Fichier image invalide", avatarTooBig: "Image trop volumineuse (max 8 Mo)", avatarUploaded: "Photo importée !",
   },
   teacher: {
@@ -260,6 +264,10 @@ const en: typeof fr = {
     timeLeft: "seconds", waitingNext: "Waiting for the next question…",
     leaderboard: "Leaderboard", finalRanking: "Final ranking", gameEnded: "Game over",
     you: "You", points: "pts",
+    questionStarting: "Answering starts in a moment…",
+    waitingForOthers: "Waiting for the other players…",
+    resultsSoon: "Results are about to appear…",
+    noAnswer: "No answer was recorded for this question.",
     uploadPhoto: "Upload a photo", avatarInvalid: "Invalid image file", avatarTooBig: "Image too large (max 8 MB)", avatarUploaded: "Photo uploaded!",
   },
   teacher: {
@@ -412,6 +420,10 @@ const ar: typeof fr = {
     timeLeft: "ثوانٍ", waitingNext: "في انتظار السؤال التالي…",
     leaderboard: "التصنيف", finalRanking: "التصنيف النهائي", gameEnded: "انتهت اللعبة",
     you: "أنت", points: "نقطة",
+    questionStarting: "سيبدأ وقت الإجابة بعد لحظة…",
+    waitingForOthers: "في انتظار إجابات بقية اللاعبين…",
+    resultsSoon: "النتيجة ستظهر بعد قليل…",
+    noAnswer: "لم يتم تسجيل إجابة لهذا السؤال.",
     uploadPhoto: "تحميل صورة", avatarInvalid: "ملف صورة غير صالح", avatarTooBig: "الصورة كبيرة جدًا (8 ميغابايت كحد أقصى)", avatarUploaded: "تم تحميل الصورة!",
   },
   teacher: {
