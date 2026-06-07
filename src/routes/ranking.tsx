@@ -67,7 +67,7 @@ function RankingPage() {
                       <div className="w-6 grid place-items-center">{medal(i)}</div>
                       <div className="h-9 w-9 rounded-xl bg-primary-gradient grid place-items-center text-primary-foreground font-bold">{p.username[0]?.toUpperCase()}</div>
                       <span className="font-semibold flex-1 truncate">{p.username}</span>
-                      <span className="font-display font-bold text-primary tabular-nums">{p.total} {t("ranking.xp")}</span>
+                      <span className="font-display font-bold text-primary tabular-nums">{p.total} {t("play.points")}</span>
                     </li>
                   ))}
                 </ul>
