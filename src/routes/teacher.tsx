@@ -23,7 +23,7 @@ type Room = {
   phase_ends_at?: string | null;
 };
 type Player = { id: string; username: string; client_id: string; avatar: string | null };
-type Quiz = { id: string; title: string };
+type Quiz = { id: string; title: string; category: string | null };
 type Question = { id: string; position: number; text: string; time_limit: number; points: number; type: string; image_url: string | null };
 type AnswerProgress = { answeredCount: number; playerCount: number };
 
