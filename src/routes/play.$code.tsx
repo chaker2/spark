@@ -545,8 +545,14 @@ function WaitingCard({ answerProgress, allAnswered, t }: { answerProgress: Answe
   );
 }
 
-function ResultCard({ myAnswer, t }: { myAnswer: AnswerResult | null; t: any }) {
+function ResultCard({ myAnswer, question, resultDetails, t }: { myAnswer: AnswerResult | null; question: Question; resultDetails: ResultDetails | null; t: any }) {
   const correct = !!myAnswer?.isCorrect;
+  const correctChoiceText = question.choices.find((c) => c.id === (myAnswer?.correctChoiceId ?? resultDetails?.correctChoiceId))?.text;
+  const correctPuzzle = (resultDetails?.correctOrder ?? myAnswer?.correctOrder ?? [])
+    .map((id) => question.choices.find((c) => c.id === id)?.text)
+    .filter(Boolean)
+    .join(" → ");
+  const revealedAnswer = question.type === "written" ? (myAnswer?.correctText ?? resultDetails?.correctText) : question.type === "puzzle" ? correctPuzzle : correctChoiceText;
   return (
     <div className="rounded-3xl bg-card border border-border shadow-float p-8 sm:p-10 text-center animate-pop-in">
       <div className={`mx-auto h-20 w-20 rounded-3xl grid place-items-center shadow-pop ${correct ? "bg-mint-gradient text-secondary-foreground" : "bg-[oklch(0.95_0.05_25)] text-coral"}`}>
@@ -554,6 +560,12 @@ function ResultCard({ myAnswer, t }: { myAnswer: AnswerResult | null; t: any }) 
       </div>
       <h2 className="mt-6 font-display text-3xl sm:text-4xl font-bold">{correct ? t("play.correct") : t("play.wrong")}</h2>
       {!myAnswer && <p className="mt-3 text-muted-foreground">{t("play.noAnswer")}</p>}
+      {revealedAnswer && (
+        <div className="mt-5 rounded-2xl bg-mint/10 border border-mint/30 px-4 py-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("quizForm.correct")}</p>
+          <p className="mt-1 font-display text-xl font-bold text-foreground">{revealedAnswer}</p>
+        </div>
+      )}
     </div>
   );
 }
