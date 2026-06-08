@@ -81,10 +81,10 @@ function PlayPage() {
   useEffect(() => {
     if (!room?.quiz_id) return;
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
-      setCategory((data as any)?.category ?? null);
+      const { data } = await supabase.rpc("get_room_category", { _room_id: room.id });
+      setCategory((data as string | null) ?? null);
     })();
-  }, [room?.quiz_id]);
+  }, [room?.id, room?.quiz_id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,6 +132,7 @@ function PlayPage() {
         setRoom((r) => (r ? { ...r, ...(p.new as Room) } : r));
         loadScores();
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadScores)
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, () =>
         setRoom((r) => (r ? { ...r, status: "ended" } : r)),
       )
