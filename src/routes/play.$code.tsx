@@ -29,6 +29,7 @@ type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
 type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[]; correctText?: string | null; similarity?: number };
 type AnswerProgress = { answeredCount: number; playerCount: number };
+type ResultDetails = { correctChoiceId: string | null; correctOrder: string[]; correctText: string | null };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
@@ -53,6 +54,8 @@ function PlayPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
   const [myAnswer, setMyAnswer] = useState<AnswerResult | null>(null);
+  const [submittingAnswer, setSubmittingAnswer] = useState(false);
+  const [resultDetails, setResultDetails] = useState<ResultDetails | null>(null);
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
@@ -81,10 +84,10 @@ function PlayPage() {
   useEffect(() => {
     if (!room?.quiz_id) return;
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
-      setCategory((data as any)?.category ?? null);
+      const { data } = await supabase.rpc("get_room_category", { _room_id: room.id });
+      setCategory((data as string | null) ?? null);
     })();
-  }, [room?.quiz_id]);
+  }, [room?.id, room?.quiz_id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,6 +135,7 @@ function PlayPage() {
         setRoom((r) => (r ? { ...r, ...(p.new as Room) } : r));
         loadScores();
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadScores)
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, () =>
         setRoom((r) => (r ? { ...r, status: "ended" } : r)),
       )
@@ -148,6 +152,8 @@ function PlayPage() {
     if (!room?.current_question_id) {
       setQuestion(null);
       setMyAnswer(null);
+      setResultDetails(null);
+      setSubmittingAnswer(false);
       setPuzzleOrder([]);
       setAnswerProgress({ answeredCount: 0, playerCount: 0 });
       prevQuestionIdRef.current = null;
@@ -165,6 +171,8 @@ function PlayPage() {
       }
       if (prevQuestionIdRef.current !== room.current_question_id) {
         setMyAnswer(null);
+        setResultDetails(null);
+        setSubmittingAnswer(false);
         prevQuestionIdRef.current = room.current_question_id;
       }
     })();
@@ -184,12 +192,42 @@ function PlayPage() {
       }
     };
     loadProgress();
+    const ch = supabase
+      .channel(`answer-progress-${room.id}-${room.current_question_id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadProgress)
+      .subscribe();
     const poll = setInterval(loadProgress, 1000);
     return () => {
       cancelled = true;
       clearInterval(poll);
+      supabase.removeChannel(ch);
     };
   }, [room?.id, room?.current_question_id, players.length]);
+
+  useEffect(() => {
+    if (room?.question_phase !== "result" || !room.id || !room.current_question_id) {
+      if (room?.question_phase !== "result") setResultDetails(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("get_question_result_details", {
+        _room_id: room.id,
+        _question_id: room.current_question_id!,
+      });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!cancelled && row) {
+        setResultDetails({
+          correctChoiceId: row.correct_choice_id ?? null,
+          correctOrder: row.correct_order ?? [],
+          correctText: row.correct_text ?? null,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [room?.question_phase, room?.id, room?.current_question_id]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 250);
@@ -259,7 +297,8 @@ function PlayPage() {
   const allAnswered = answerProgress.playerCount > 0 && answerProgress.answeredCount >= answerProgress.playerCount;
 
   const answer = async (choice: Choice) => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
@@ -267,8 +306,10 @@ function PlayPage() {
       _username: me.username,
       _choice_id: choice.id,
       _puzzle_order: [],
+      _text_answer: null,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -282,16 +323,19 @@ function PlayPage() {
   };
 
   const submitPuzzle = async () => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
       _client_id: getClientId(),
       _username: me.username,
-      _choice_id: undefined as any,
+      _choice_id: null,
       _puzzle_order: puzzleOrder.map((c) => c.id),
+      _text_answer: null,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -304,17 +348,19 @@ function PlayPage() {
   };
 
   const submitWritten = async (text: string) => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
       _client_id: getClientId(),
       _username: me.username,
-      _choice_id: undefined as any,
+      _choice_id: null,
       _puzzle_order: [],
       _text_answer: text,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -336,7 +382,7 @@ function PlayPage() {
   return (
     <div className="min-h-screen bg-sky-gradient relative">
       <CategoryBackground category={category} />
-      <div className="relative">
+      <div className="relative z-10">
         <header className="px-4 pt-4">
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
             <SparkLogo />
@@ -409,7 +455,7 @@ function PlayPage() {
             room.question_phase === "intro" ? (
               <IntroCard question={question} secondsLeft={phaseTimeLeft} t={t} />
             ) : room.question_phase === "result" ? (
-              <ResultCard myAnswer={myAnswer} t={t} />
+              <ResultCard myAnswer={myAnswer} question={question} resultDetails={resultDetails} t={t} />
             ) : (
               <QuestionView
                 key={`${question.id}-${room.question_phase}`}
@@ -422,7 +468,7 @@ function PlayPage() {
                 onWrittenSubmit={submitWritten}
                 puzzleOrder={puzzleOrder}
                 myScore={myScore}
-                isWaiting={!!myAnswer}
+                isWaiting={submittingAnswer || !!myAnswer}
                 answerProgress={answerProgress}
                 allAnswered={allAnswered}
                 t={t}
@@ -499,8 +545,14 @@ function WaitingCard({ answerProgress, allAnswered, t }: { answerProgress: Answe
   );
 }
 
-function ResultCard({ myAnswer, t }: { myAnswer: AnswerResult | null; t: any }) {
+function ResultCard({ myAnswer, question, resultDetails, t }: { myAnswer: AnswerResult | null; question: Question; resultDetails: ResultDetails | null; t: any }) {
   const correct = !!myAnswer?.isCorrect;
+  const correctChoiceText = question.choices.find((c) => c.id === (myAnswer?.correctChoiceId ?? resultDetails?.correctChoiceId))?.text;
+  const correctPuzzle = (resultDetails?.correctOrder ?? myAnswer?.correctOrder ?? [])
+    .map((id) => question.choices.find((c) => c.id === id)?.text)
+    .filter(Boolean)
+    .join(" → ");
+  const revealedAnswer = question.type === "written" ? (myAnswer?.correctText ?? resultDetails?.correctText) : question.type === "puzzle" ? correctPuzzle : correctChoiceText;
   return (
     <div className="rounded-3xl bg-card border border-border shadow-float p-8 sm:p-10 text-center animate-pop-in">
       <div className={`mx-auto h-20 w-20 rounded-3xl grid place-items-center shadow-pop ${correct ? "bg-mint-gradient text-secondary-foreground" : "bg-[oklch(0.95_0.05_25)] text-coral"}`}>
@@ -508,6 +560,12 @@ function ResultCard({ myAnswer, t }: { myAnswer: AnswerResult | null; t: any }) 
       </div>
       <h2 className="mt-6 font-display text-3xl sm:text-4xl font-bold">{correct ? t("play.correct") : t("play.wrong")}</h2>
       {!myAnswer && <p className="mt-3 text-muted-foreground">{t("play.noAnswer")}</p>}
+      {revealedAnswer && (
+        <div className="mt-5 rounded-2xl bg-mint/10 border border-mint/30 px-4 py-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("quizForm.correct")}</p>
+          <p className="mt-1 font-display text-xl font-bold text-foreground">{revealedAnswer}</p>
+        </div>
+      )}
     </div>
   );
 }
