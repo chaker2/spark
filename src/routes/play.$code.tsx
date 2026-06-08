@@ -382,7 +382,7 @@ function PlayPage() {
   return (
     <div className="min-h-screen bg-sky-gradient relative">
       <CategoryBackground category={category} />
-      <div className="relative">
+      <div className="relative z-10">
         <header className="px-4 pt-4">
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
             <SparkLogo />
