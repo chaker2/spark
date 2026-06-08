@@ -44,6 +44,7 @@ function TeacherDashboard() {
   const [creating, setCreating] = useState(false);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<string | null>(null);
+  const selectedQuizCategory = useMemo(() => quizzes.find((q: any) => q.id === selectedQuiz)?.category ?? null, [quizzes, selectedQuiz]);
   const [reloadKey, setReloadKey] = useState(0);
   const [now, setNow] = useState(Date.now());
   const [answerProgress, setAnswerProgress] = useState<AnswerProgress>({ answeredCount: 0, playerCount: 0 });
@@ -88,7 +89,7 @@ function TeacherDashboard() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data: qs } = await supabase.from("quizzes").select("id, title").eq("owner_id", user.id).order("created_at", { ascending: false });
+      const { data: qs } = await supabase.from("quizzes").select("id, title, category").eq("owner_id", user.id).order("created_at", { ascending: false });
       setQuizzes((qs as Quiz[]) ?? []);
       if (qs?.[0]) setSelectedQuiz(qs[0].id);
       const { data: r } = await supabase.from("rooms").select("*").eq("host_id", user.id).in("status", ["waiting", "active"]).order("created_at", { ascending: false }).limit(1).maybeSingle();
@@ -188,7 +189,7 @@ function TeacherDashboard() {
     const { data, error } = await supabase.rpc("start_room_question", {
       _room_id: room.id,
       _question_id: questionId,
-      _intro_seconds: 3,
+      _intro_seconds: 5,
     });
     if (error) throw error;
     setRoom((data as Room) ?? room);
@@ -314,7 +315,7 @@ function TeacherDashboard() {
 
   return (
     <div className="min-h-screen bg-sky-gradient relative">
-      <CategoryBackground category={category} />
+      <CategoryBackground category={category ?? selectedQuizCategory} />
       <div className="relative">
         <header className="sticky top-0 z-50 px-4 pt-4">
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
