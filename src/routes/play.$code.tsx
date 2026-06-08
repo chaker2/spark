@@ -29,6 +29,7 @@ type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
 type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[]; correctText?: string | null; similarity?: number };
 type AnswerProgress = { answeredCount: number; playerCount: number };
+type ResultDetails = { correctChoiceId: string | null; correctOrder: string[]; correctText: string | null };
 
 export const Route = createFileRoute("/play/$code")({
   component: PlayPage,
@@ -53,6 +54,8 @@ function PlayPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
   const [myAnswer, setMyAnswer] = useState<AnswerResult | null>(null);
+  const [submittingAnswer, setSubmittingAnswer] = useState(false);
+  const [resultDetails, setResultDetails] = useState<ResultDetails | null>(null);
   const [puzzleOrder, setPuzzleOrder] = useState<Choice[]>([]);
   const [now, setNow] = useState(Date.now());
   const [scores, setScores] = useState<Record<string, number>>({});
@@ -149,6 +152,8 @@ function PlayPage() {
     if (!room?.current_question_id) {
       setQuestion(null);
       setMyAnswer(null);
+      setResultDetails(null);
+      setSubmittingAnswer(false);
       setPuzzleOrder([]);
       setAnswerProgress({ answeredCount: 0, playerCount: 0 });
       prevQuestionIdRef.current = null;
@@ -166,6 +171,8 @@ function PlayPage() {
       }
       if (prevQuestionIdRef.current !== room.current_question_id) {
         setMyAnswer(null);
+        setResultDetails(null);
+        setSubmittingAnswer(false);
         prevQuestionIdRef.current = room.current_question_id;
       }
     })();
@@ -185,12 +192,42 @@ function PlayPage() {
       }
     };
     loadProgress();
+    const ch = supabase
+      .channel(`answer-progress-${room.id}-${room.current_question_id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadProgress)
+      .subscribe();
     const poll = setInterval(loadProgress, 1000);
     return () => {
       cancelled = true;
       clearInterval(poll);
+      supabase.removeChannel(ch);
     };
   }, [room?.id, room?.current_question_id, players.length]);
+
+  useEffect(() => {
+    if (room?.question_phase !== "result" || !room.id || !room.current_question_id) {
+      if (room?.question_phase !== "result") setResultDetails(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("get_question_result_details", {
+        _room_id: room.id,
+        _question_id: room.current_question_id!,
+      });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!cancelled && row) {
+        setResultDetails({
+          correctChoiceId: row.correct_choice_id ?? null,
+          correctOrder: row.correct_order ?? [],
+          correctText: row.correct_text ?? null,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [room?.question_phase, room?.id, room?.current_question_id]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 250);
