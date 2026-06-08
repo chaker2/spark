@@ -176,7 +176,7 @@ function PlayPage() {
     const loadProgress = async () => {
       const { data } = await supabase.rpc("get_room_answer_progress", {
         _room_id: room.id,
-        _question_id: room.current_question_id,
+        _question_id: room.current_question_id!,
       });
       const row = Array.isArray(data) ? data[0] : data;
       if (!cancelled && row) {
