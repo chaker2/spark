@@ -76,7 +76,7 @@ function TeacherDashboard() {
       return;
     }
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id).maybeSingle();
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
       setCategory((data as any)?.category ?? null);
     })();
   }, [room?.quiz_id]);
