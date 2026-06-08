@@ -387,6 +387,14 @@ export type Database = {
           text: string
         }[]
       }
+      get_question_result_details: {
+        Args: { _question_id: string; _room_id: string }
+        Returns: {
+          correct_choice_id: string
+          correct_order: string[]
+          correct_text: string
+        }[]
+      }
       get_quiz_editor_questions: { Args: { _quiz_id: string }; Returns: Json }
       get_room_answer_progress: {
         Args: { _question_id: string; _room_id: string }
