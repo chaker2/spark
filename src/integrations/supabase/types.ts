@@ -403,6 +403,7 @@ export type Database = {
           player_count: number
         }[]
       }
+      get_room_category: { Args: { _room_id: string }; Returns: string }
       get_room_scoreboard: {
         Args: { _room_id: string }
         Returns: {
