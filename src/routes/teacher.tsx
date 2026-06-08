@@ -77,10 +77,10 @@ function TeacherDashboard() {
       return;
     }
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
-      setCategory((data as any)?.category ?? null);
+      const { data } = await supabase.rpc("get_room_category", { _room_id: room.id });
+      setCategory((data as string | null) ?? null);
     })();
-  }, [room?.quiz_id]);
+  }, [room?.id, room?.quiz_id]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -316,7 +316,7 @@ function TeacherDashboard() {
   return (
     <div className="min-h-screen bg-sky-gradient relative">
       <CategoryBackground category={category ?? selectedQuizCategory} />
-      <div className="relative">
+      <div className="relative z-10">
         <header className="sticky top-0 z-50 px-4 pt-4">
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
             <SparkLogo />
