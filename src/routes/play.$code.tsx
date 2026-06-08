@@ -297,7 +297,8 @@ function PlayPage() {
   const allAnswered = answerProgress.playerCount > 0 && answerProgress.answeredCount >= answerProgress.playerCount;
 
   const answer = async (choice: Choice) => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
@@ -305,8 +306,10 @@ function PlayPage() {
       _username: me.username,
       _choice_id: choice.id,
       _puzzle_order: [],
+      _text_answer: null,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -320,16 +323,19 @@ function PlayPage() {
   };
 
   const submitPuzzle = async () => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
       _client_id: getClientId(),
       _username: me.username,
-      _choice_id: undefined as any,
+      _choice_id: null,
       _puzzle_order: puzzleOrder.map((c) => c.id),
+      _text_answer: null,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -342,17 +348,19 @@ function PlayPage() {
   };
 
   const submitWritten = async (text: string) => {
-    if (!room || !question || !me || myAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    if (!room || !question || !me || myAnswer || submittingAnswer || !isAnswering || phaseTimeLeft <= 0) return;
+    setSubmittingAnswer(true);
     const { data, error } = await supabase.rpc("submit_answer", {
       _room_id: room.id,
       _question_id: question.id,
       _client_id: getClientId(),
       _username: me.username,
-      _choice_id: undefined as any,
+      _choice_id: null,
       _puzzle_order: [],
       _text_answer: text,
     } as any);
     if (error) {
+      setSubmittingAnswer(false);
       toast.error(error.message);
       return;
     }
@@ -447,7 +455,7 @@ function PlayPage() {
             room.question_phase === "intro" ? (
               <IntroCard question={question} secondsLeft={phaseTimeLeft} t={t} />
             ) : room.question_phase === "result" ? (
-              <ResultCard myAnswer={myAnswer} t={t} />
+              <ResultCard myAnswer={myAnswer} question={question} resultDetails={resultDetails} t={t} />
             ) : (
               <QuestionView
                 key={`${question.id}-${room.question_phase}`}
@@ -460,7 +468,7 @@ function PlayPage() {
                 onWrittenSubmit={submitWritten}
                 puzzleOrder={puzzleOrder}
                 myScore={myScore}
-                isWaiting={!!myAnswer}
+                isWaiting={submittingAnswer || !!myAnswer}
                 answerProgress={answerProgress}
                 allAnswered={allAnswered}
                 t={t}
