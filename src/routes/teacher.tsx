@@ -99,7 +99,7 @@ function TeacherDashboard() {
   useEffect(() => {
     if (!room?.quiz_id) return;
     (async () => {
-      const { data } = await supabase.from("questions").select("id, position, text, time_limit, points, type, image_url").eq("quiz_id", room.quiz_id).order("position");
+      const { data } = await supabase.from("questions").select("id, position, text, time_limit, points, type, image_url").eq("quiz_id", room.quiz_id!).order("position");
       setQuestions((data as Question[]) ?? []);
     })();
   }, [room?.quiz_id]);
