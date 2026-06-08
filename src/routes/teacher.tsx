@@ -76,7 +76,7 @@ function TeacherDashboard() {
       return;
     }
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id).maybeSingle();
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
       setCategory((data as any)?.category ?? null);
     })();
   }, [room?.quiz_id]);
@@ -99,7 +99,7 @@ function TeacherDashboard() {
   useEffect(() => {
     if (!room?.quiz_id) return;
     (async () => {
-      const { data } = await supabase.from("questions").select("id, position, text, time_limit, points, type, image_url").eq("quiz_id", room.quiz_id).order("position");
+      const { data } = await supabase.from("questions").select("id, position, text, time_limit, points, type, image_url").eq("quiz_id", room.quiz_id!).order("position");
       setQuestions((data as Question[]) ?? []);
     })();
   }, [room?.quiz_id]);
@@ -140,7 +140,7 @@ function TeacherDashboard() {
     const loadProgress = async () => {
       const { data } = await supabase.rpc("get_room_answer_progress", {
         _room_id: room.id,
-        _question_id: room.current_question_id,
+        _question_id: room.current_question_id!,
       });
       const row = Array.isArray(data) ? data[0] : data;
       if (!cancelled && row) {
@@ -199,7 +199,7 @@ function TeacherDashboard() {
     const { data, error } = await supabase.rpc("advance_room_phase", {
       _room_id: room.id,
       _next_phase: nextPhase,
-      _duration_seconds: durationSeconds,
+      _duration_seconds: durationSeconds ?? undefined,
     });
     if (error) throw error;
     setRoom((data as Room) ?? room);

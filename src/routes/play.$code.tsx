@@ -81,7 +81,7 @@ function PlayPage() {
   useEffect(() => {
     if (!room?.quiz_id) return;
     (async () => {
-      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id).maybeSingle();
+      const { data } = await supabase.from("quizzes").select("category").eq("id", room.quiz_id!).maybeSingle();
       setCategory((data as any)?.category ?? null);
     })();
   }, [room?.quiz_id]);
@@ -154,8 +154,8 @@ function PlayPage() {
       return;
     }
     (async () => {
-      const { data: q } = await supabase.from("questions").select("id, text, time_limit, points, type, image_url").eq("id", room.current_question_id).single();
-      const { data: ch } = await supabase.rpc("get_question_choices", { _question_id: room.current_question_id });
+      const { data: q } = await supabase.from("questions").select("id, text, time_limit, points, type, image_url").eq("id", room.current_question_id!).single();
+      const { data: ch } = await supabase.rpc("get_question_choices", { _question_id: room.current_question_id! });
       if (q) {
         const choices: Choice[] = ((ch as any[]) ?? []).map((c) => ({ id: c.id, text: c.text, position: c.pos }));
         setQuestion({ ...(q as any), choices });
@@ -176,7 +176,7 @@ function PlayPage() {
     const loadProgress = async () => {
       const { data } = await supabase.rpc("get_room_answer_progress", {
         _room_id: room.id,
-        _question_id: room.current_question_id,
+        _question_id: room.current_question_id!,
       });
       const row = Array.isArray(data) ? data[0] : data;
       if (!cancelled && row) {
