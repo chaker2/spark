@@ -1,0 +1,2 @@
+ALTER TABLE public.questions DROP CONSTRAINT IF EXISTS questions_type_check;
+ALTER TABLE public.questions ADD CONSTRAINT questions_type_check CHECK (type = ANY (ARRAY['multiple_choice'::text, 'true_false'::text, 'puzzle'::text, 'image'::text, 'written'::text]));
