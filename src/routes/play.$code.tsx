@@ -374,13 +374,13 @@ function PlayPage() {
     });
   };
 
-  if (loading) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const myScore = me ? scores[me.username] ?? 0 : 0;
 
   return (
-    <div className="min-h-screen bg-sky-gradient relative">
+    <div className="min-h-screen bg-background relative">
       <CategoryBackground category={category} />
       <div className="relative z-10">
         <header className="px-4 pt-4">
