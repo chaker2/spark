@@ -311,10 +311,10 @@ function TeacherDashboard() {
     }
   }, [room, currentQ, phaseTimeLeft, allAnswered]);
 
-  if (loading || !user) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading || !user) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="min-h-screen bg-sky-gradient relative">
+    <div className="min-h-screen bg-background relative">
       <CategoryBackground category={category ?? selectedQuizCategory} />
       <div className="relative z-10">
         <header className="sticky top-0 z-50 px-4 pt-4">
