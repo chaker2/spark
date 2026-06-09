@@ -118,6 +118,10 @@ function TeacherDashboard() {
       (data ?? []).forEach((r: any) => (map[r.username] = (map[r.username] ?? 0) + r.score_awarded));
       if (!cancelled) setScores(map);
     };
+    const refreshRoom = async () => {
+      const { data } = await supabase.from("rooms").select("*").eq("id", room.id).maybeSingle();
+      if (!cancelled && data) setRoom(data as Room);
+    };
     loadPlayers();
     loadScores();
     const ch = supabase
@@ -126,8 +130,10 @@ function TeacherDashboard() {
       .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadScores)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` }, (p) => setRoom((r) => (r ? { ...r, ...(p.new as Room) } : r)))
       .subscribe();
+    const roomPoll = setInterval(refreshRoom, 2000);
     return () => {
       cancelled = true;
+      clearInterval(roomPoll);
       supabase.removeChannel(ch);
     };
   }, [room?.id, reloadKey]);
@@ -149,10 +155,15 @@ function TeacherDashboard() {
       }
     };
     loadProgress();
+    const ch = supabase
+      .channel(`teacher-answer-progress-${room.id}-${room.current_question_id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_answers", filter: `room_id=eq.${room.id}` }, loadProgress)
+      .subscribe();
     const poll = setInterval(loadProgress, 1000);
     return () => {
       cancelled = true;
       clearInterval(poll);
+      supabase.removeChannel(ch);
     };
   }, [room?.id, room?.current_question_id, players.length]);
 
@@ -189,7 +200,7 @@ function TeacherDashboard() {
     const { data, error } = await supabase.rpc("start_room_question", {
       _room_id: room.id,
       _question_id: questionId,
-      _intro_seconds: 5,
+      _intro_seconds: 2,
     });
     if (error) throw error;
     setRoom((data as Room) ?? room);
@@ -230,7 +241,7 @@ function TeacherDashboard() {
   const revealAnswer = async () => {
     if (!room) return;
     try {
-      await setPhase("result", 4);
+      await setPhase("result", 3);
       toast.success(t("teacher.revealAnswer"));
     } catch (e: any) {
       toast.error(e.message);
@@ -302,7 +313,7 @@ function TeacherDashboard() {
       });
     } else if (room.question_phase === "answering" && (phaseTimeLeft <= 0 || allAnswered)) {
       run(async () => {
-        await setPhase("result", 4);
+        await setPhase("result", 3);
       });
     } else if (room.question_phase === "result" && phaseTimeLeft <= 0) {
       run(async () => {
@@ -311,10 +322,10 @@ function TeacherDashboard() {
     }
   }, [room, currentQ, phaseTimeLeft, allAnswered]);
 
-  if (loading || !user) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading || !user) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="min-h-screen bg-sky-gradient relative">
+    <div className="min-h-screen bg-background relative">
       <CategoryBackground category={category ?? selectedQuizCategory} />
       <div className="relative z-10">
         <header className="sticky top-0 z-50 px-4 pt-4">

@@ -8,17 +8,6 @@ import scienceAsset from "@/assets/science.png.asset.json";
 import islamicAsset from "@/assets/islamic-education.png.asset.json";
 import { CATEGORY_KEYS, type CategoryKey } from "@/lib/categories";
 
-const PATTERNS: Record<CategoryKey, string> = {
-  arabic: "ا ب ج د هـ و ز ح ط ي ك ل م ن س ع ف ص ق ر ش ت ث خ ذ ض ظ غ",
-  english: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z",
-  social: "🗺 🌍 🏛 ⚖ 🗽 🕌 🏺 🌐",
-  french: "À Â Ç É È Ê Ë Î Ï Ô Œ Ù Û Ü Ÿ « »",
-  math: "∑ ∫ √ π ∞ ≈ ≠ ≤ ≥ ± × ÷ θ φ Δ λ μ Ω α β γ",
-  physics: "E=mc² F=ma ⚛ ⚡ 🔭 🧲 λ ν ψ Δ ∇ ℏ",
-  science: "🧬 🔬 🌱 🧪 ⚗ 🍃 🦠 🧫",
-  islamic: "✦ ✧ ☪ ❋ ✺ ✹ ✸",
-};
-
 const BACKGROUNDS: Record<CategoryKey, string> = {
   arabic: arabicAsset.url,
   english: englishAsset.url,
@@ -64,26 +53,15 @@ const CATEGORY_ALIASES: Record<string, CategoryKey> = {
 export function getCategoryBackground(category?: string | null) {
   const raw = (category ?? "").trim().toLowerCase();
   const key = (CATEGORY_KEYS as readonly string[]).includes(raw) ? (raw as CategoryKey) : CATEGORY_ALIASES[raw] ?? "english";
-  return { key, text: PATTERNS[key], imageUrl: BACKGROUNDS[key] };
+  return { key, imageUrl: BACKGROUNDS[key] };
 }
 
 export function CategoryBackground({ category, className = "" }: { category?: string | null; className?: string }) {
-  const { key, text, imageUrl } = getCategoryBackground(category);
+  const { key, imageUrl } = getCategoryBackground(category);
 
   return (
-    <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden ${className}`} aria-hidden data-category-background={key}>
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-80"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      />
-      <div className="absolute inset-0 bg-background/25" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/30 to-background/60" />
-      <div
-        className="absolute inset-0 opacity-[0.08] select-none whitespace-pre-wrap break-all leading-[2.5] text-[28px] sm:text-[36px] font-display text-primary"
-        style={{ wordSpacing: "1rem" }}
-      >
-        {(text + " ").repeat(80)}
-      </div>
+    <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background ${className}`} aria-hidden data-category-background={key} data-background-url={imageUrl}>
+      <img src={imageUrl} alt="" className="h-full w-full object-cover object-center" draggable={false} />
     </div>
   );
 }

@@ -24,7 +24,7 @@ type Room = {
   phase_ends_at?: string | null;
   reveal_answer?: boolean;
 };
-type Player = { id: string; username: string; avatar: string | null };
+type Player = { id: string; username: string; client_id: string; avatar: string | null };
 type Choice = { id: string; text: string; position: number };
 type Question = { id: string; text: string; time_limit: number; points: number; type: QuestionType; image_url: string | null; choices: Choice[] };
 type AnswerResult = { choiceId?: string; isCorrect: boolean; correctChoiceId: string | null; correctOrder: string[]; correctText?: string | null; similarity?: number };
@@ -112,11 +112,16 @@ function PlayPage() {
     if (!room) return;
     let cancelled = false;
     const loadPlayers = async () => {
-      const { data } = await supabase.from("room_players").select("id, username, avatar").eq("room_id", room.id).order("joined_at");
+      const { data } = await supabase.from("room_players").select("id, username, client_id, avatar").eq("room_id", room.id).order("joined_at");
       if (cancelled) return;
       const list = (data as Player[]) ?? [];
       setPlayers(list);
-      if (myPlayerId && !list.find((p) => p.id === myPlayerId)) setMyPlayerId(null);
+      const existingPlayer = list.find((p) => p.client_id === getClientId());
+      if (existingPlayer && !myPlayerId) {
+        setMyPlayerId(existingPlayer.id);
+        setUsername(existingPlayer.username);
+        if (existingPlayer.avatar) setAvatar(existingPlayer.avatar as Avatar);
+      } else if (myPlayerId && !list.find((p) => p.id === myPlayerId)) setMyPlayerId(null);
     };
     const loadScores = async () => {
       const { data } = await supabase.rpc("get_room_scoreboard", { _room_id: room.id });
@@ -125,6 +130,10 @@ function PlayPage() {
         map[r.username] = r.total;
       });
       if (!cancelled) setScores(map);
+    };
+    const refreshRoom = async () => {
+      const { data } = await supabase.from("rooms").select("*").eq("id", room.id).maybeSingle();
+      if (!cancelled && data) setRoom(data as Room);
     };
     loadPlayers();
     loadScores();
@@ -140,10 +149,12 @@ function PlayPage() {
         setRoom((r) => (r ? { ...r, status: "ended" } : r)),
       )
       .subscribe();
-    const poll = setInterval(loadScores, 3000);
+    const scorePoll = setInterval(loadScores, 3000);
+    const roomPoll = setInterval(refreshRoom, 2000);
     return () => {
       cancelled = true;
-      clearInterval(poll);
+      clearInterval(scorePoll);
+      clearInterval(roomPoll);
       supabase.removeChannel(ch);
     };
   }, [room?.id, myPlayerId, reloadKey]);
@@ -374,13 +385,13 @@ function PlayPage() {
     });
   };
 
-  if (loading) return <div className="min-h-screen grid place-items-center bg-sky-gradient"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const myScore = me ? scores[me.username] ?? 0 : 0;
 
   return (
-    <div className="min-h-screen bg-sky-gradient relative">
+    <div className="min-h-screen bg-background relative">
       <CategoryBackground category={category} />
       <div className="relative z-10">
         <header className="px-4 pt-4">
