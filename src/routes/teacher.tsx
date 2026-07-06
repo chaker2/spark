@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { usePhaseCountdown } from "@/lib/usePhaseCountdown";
 import { SparkLogo } from "@/components/SparkLogo";
 import { Loader2, LogOut, Plus, Users, Play, X, Copy, Sparkles, SkipForward, Trophy, Trash2, UserX, Eye, Clock3 } from "lucide-react";
 import { toast } from "sonner";
@@ -170,10 +171,7 @@ function TeacherDashboard() {
   const currentIdx = useMemo(() => questions.findIndex((q) => q.id === room?.current_question_id), [questions, room?.current_question_id]);
   const currentQ = currentIdx >= 0 ? questions[currentIdx] : null;
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const phaseTimeLeft = useMemo(() => {
-    if (!room?.phase_ends_at) return 0;
-    return Math.max(0, Math.ceil((new Date(room.phase_ends_at).getTime() - now) / 1000));
-  }, [room?.phase_ends_at, now]);
+  const phaseTimeLeft = usePhaseCountdown(room?.question_phase, room?.phase_started_at, room?.phase_ends_at);
   const allAnswered = answerProgress.playerCount > 0 && answerProgress.answeredCount >= answerProgress.playerCount;
 
   const createRoom = async () => {
