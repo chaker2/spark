@@ -200,7 +200,7 @@ function TeacherDashboard() {
     const { data, error } = await supabase.rpc("start_room_question", {
       _room_id: room.id,
       _question_id: questionId,
-      _intro_seconds: 2,
+      _intro_seconds: 5,
     });
     if (error) throw error;
     setRoom((data as Room) ?? room);
