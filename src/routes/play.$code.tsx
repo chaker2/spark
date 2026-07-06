@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getClientId } from "@/hooks/useAuth";
+import { usePhaseCountdown } from "@/lib/usePhaseCountdown";
 import { SparkLogo } from "@/components/SparkLogo";
 import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -299,10 +300,7 @@ function PlayPage() {
 
   const me = useMemo(() => players.find((p) => p.id === myPlayerId), [players, myPlayerId]);
 
-  const phaseTimeLeft = useMemo(() => {
-    if (!room?.phase_ends_at) return 0;
-    return Math.max(0, Math.ceil((new Date(room.phase_ends_at).getTime() - now) / 1000));
-  }, [now, room?.phase_ends_at]);
+  const phaseTimeLeft = usePhaseCountdown(room?.question_phase, room?.phase_started_at, room?.phase_ends_at);
 
   const isAnswering = room?.question_phase === "answering";
   const allAnswered = answerProgress.playerCount > 0 && answerProgress.answeredCount >= answerProgress.playerCount;

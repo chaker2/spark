@@ -61,7 +61,21 @@ export function CategoryBackground({ category, className = "" }: { category?: st
 
   return (
     <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background ${className}`} aria-hidden data-category-background={key} data-background-url={imageUrl}>
-      <img src={imageUrl} alt="" className="h-full w-full object-contain object-center" draggable={false} />
+      {/* Blurred fill so side/letterbox padding matches the artwork instead of cropping it */}
+      <img
+        src={imageUrl}
+        alt=""
+        className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl opacity-60"
+        draggable={false}
+        aria-hidden
+      />
+      {/* Full original artwork, never cropped or distorted */}
+      <img
+        src={imageUrl}
+        alt=""
+        className="relative h-full w-full object-contain object-center"
+        draggable={false}
+      />
     </div>
   );
 }
