@@ -61,7 +61,7 @@ export function CategoryBackground({ category, className = "" }: { category?: st
 
   return (
     <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background ${className}`} aria-hidden data-category-background={key} data-background-url={imageUrl}>
-      <img src={imageUrl} alt="" className="h-full w-full object-cover object-center" draggable={false} />
+      <img src={imageUrl} alt="" className="h-full w-full object-contain object-center" draggable={false} />
     </div>
   );
 }
