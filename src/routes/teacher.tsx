@@ -239,7 +239,7 @@ function TeacherDashboard() {
   const revealAnswer = async () => {
     if (!room) return;
     try {
-      await setPhase("result", 3);
+      await setPhase("result", null);
       toast.success(t("teacher.revealAnswer"));
     } catch (e: any) {
       toast.error(e.message);
