@@ -9,6 +9,7 @@ import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, Upload } fro
 import { toast } from "sonner";
 import { AVATARS, DEFAULT_AVATAR, type Avatar, compressImage, toImageAvatar, isImageAvatar } from "@/lib/avatars";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { getStudentIdentity, saveStudentName } from "@/lib/studentIdentity";
 import type { QuestionType } from "@/lib/questionTypes";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { PuzzleSortable } from "@/components/PuzzleSortable";
