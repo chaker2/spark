@@ -261,6 +261,8 @@ function PlayPage() {
     if (!room) return;
     const trimmed = username.trim();
     if (trimmed.length < 2 || trimmed.length > 20) return toast.error(t("play.pseudoLen"));
+    // Persist the display name permanently for all future rooms.
+    saveStudentName(trimmed);
     setStep("avatar");
   };
 
