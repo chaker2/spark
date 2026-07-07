@@ -66,6 +66,15 @@ function PlayPage() {
   const [answerProgress, setAnswerProgress] = useState<AnswerProgress>({ answeredCount: 0, playerCount: 0 });
   const prevQuestionIdRef = useRef<string | null>(null);
 
+  // Reuse the permanent student identity so the name never has to be re-entered.
+  useEffect(() => {
+    const identity = getStudentIdentity();
+    if (identity?.name) {
+      setUsername(identity.name);
+      setStep("avatar");
+    }
+  }, []);
+
   useEffect(() => {
     const refresh = () => {
       if (typeof document !== "undefined" && document.visibilityState === "visible") {
