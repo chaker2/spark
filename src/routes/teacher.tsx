@@ -311,13 +311,10 @@ function TeacherDashboard() {
       });
     } else if (room.question_phase === "answering" && (phaseTimeLeft <= 0 || allAnswered)) {
       run(async () => {
-        await setPhase("result", 3);
-      });
-    } else if (room.question_phase === "result" && phaseTimeLeft <= 0) {
-      run(async () => {
-        await nextQuestion();
+        await setPhase("result", null);
       });
     }
+    // Result phase no longer auto-advances: the teacher must press "Next Question".
   }, [room, currentQ, phaseTimeLeft, allAnswered]);
 
   if (loading || !user) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
