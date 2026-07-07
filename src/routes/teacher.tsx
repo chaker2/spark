@@ -403,7 +403,8 @@ function TeacherDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
                   <button onClick={revealAnswer} disabled={room.question_phase === "result"} className="h-12 rounded-2xl border-2 border-primary text-primary font-bold hover:bg-primary/10 transition flex items-center justify-center gap-2 disabled:opacity-50"><Eye className="h-4 w-4" /> {t("teacher.revealAnswer")}</button>
                   {currentIdx < questions.length - 1 ? (
-                    <button onClick={nextQuestion} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2"><SkipForward className="h-4 w-4" /> {t("teacher.next")}</button>
+                    <button onClick={nextQuestion} className={`h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2 ${room.question_phase === "result" ? "animate-pulse-soft ring-2 ring-mint" : ""}`}><SkipForward className="h-4 w-4" /> {t("teacher.next")}</button>
+
                   ) : (
                     <button onClick={endGame} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2">{t("teacher.finish")}</button>
                   )}
