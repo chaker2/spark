@@ -239,7 +239,7 @@ function TeacherDashboard() {
   const revealAnswer = async () => {
     if (!room) return;
     try {
-      await setPhase("result", 3);
+      await setPhase("result", null);
       toast.success(t("teacher.revealAnswer"));
     } catch (e: any) {
       toast.error(e.message);
@@ -311,13 +311,10 @@ function TeacherDashboard() {
       });
     } else if (room.question_phase === "answering" && (phaseTimeLeft <= 0 || allAnswered)) {
       run(async () => {
-        await setPhase("result", 3);
-      });
-    } else if (room.question_phase === "result" && phaseTimeLeft <= 0) {
-      run(async () => {
-        await nextQuestion();
+        await setPhase("result", null);
       });
     }
+    // Result phase no longer auto-advances: the teacher must press "Next Question".
   }, [room, currentQ, phaseTimeLeft, allAnswered]);
 
   if (loading || !user) return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -406,7 +403,8 @@ function TeacherDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
                   <button onClick={revealAnswer} disabled={room.question_phase === "result"} className="h-12 rounded-2xl border-2 border-primary text-primary font-bold hover:bg-primary/10 transition flex items-center justify-center gap-2 disabled:opacity-50"><Eye className="h-4 w-4" /> {t("teacher.revealAnswer")}</button>
                   {currentIdx < questions.length - 1 ? (
-                    <button onClick={nextQuestion} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2"><SkipForward className="h-4 w-4" /> {t("teacher.next")}</button>
+                    <button onClick={nextQuestion} className={`h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2 ${room.question_phase === "result" ? "animate-pulse-soft ring-2 ring-mint" : ""}`}><SkipForward className="h-4 w-4" /> {t("teacher.next")}</button>
+
                   ) : (
                     <button onClick={endGame} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop flex items-center justify-center gap-2">{t("teacher.finish")}</button>
                   )}
