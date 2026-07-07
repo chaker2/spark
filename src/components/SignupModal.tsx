@@ -36,13 +36,18 @@ export function SignupModal({ open, onClose }: { open: boolean; onClose: () => v
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !password) return toast.error(t("signup.errorEmpty"));
+    if (!name.trim() || !email.trim()) return toast.error(t("signup.errorEmpty"));
     if (!validEmail) return toast.error(t("signup.errorEmail"));
-    if (password.length < 6) return toast.error(t("signup.errorPassword"));
+    if (role === "teacher") {
+      if (!password) return toast.error(t("signup.errorEmpty"));
+      if (password.length < 6) return toast.error(t("signup.errorPassword"));
+    }
 
     setBusy(true);
     try {
       if (role === "student") {
+        // Students never get an account — they join games anonymously with a username.
+        // Never transmit a password to any third party.
         const res = await fetch(FORMSPREE_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -50,7 +55,6 @@ export function SignupModal({ open, onClose }: { open: boolean; onClose: () => v
             role: "Student",
             fullName: name,
             email,
-            password,
             registeredAt: new Date().toISOString(),
             language: i18n.language,
           }),
@@ -127,11 +131,13 @@ export function SignupModal({ open, onClose }: { open: boolean; onClose: () => v
               placeholder={t("signup.email")}
               className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
             />
-            <input
-              type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("signup.password")}
-              className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
-            />
+            {role === "teacher" && (
+              <input
+                type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("signup.password")}
+                className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
+              />
+            )}
             <button
               type="submit" disabled={busy}
               className="w-full h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold shadow-pop hover:shadow-float hover:-translate-y-0.5 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
