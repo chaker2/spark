@@ -9,6 +9,7 @@ import { ArrowLeft, Loader2, LogIn, Users, X, Check, Trophy, Clock, Upload } fro
 import { toast } from "sonner";
 import { AVATARS, DEFAULT_AVATAR, type Avatar, compressImage, toImageAvatar, isImageAvatar } from "@/lib/avatars";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { getStudentIdentity, saveStudentName } from "@/lib/studentIdentity";
 import type { QuestionType } from "@/lib/questionTypes";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { PuzzleSortable } from "@/components/PuzzleSortable";
@@ -64,6 +65,15 @@ function PlayPage() {
   const [reloadKey, setReloadKey] = useState(0);
   const [answerProgress, setAnswerProgress] = useState<AnswerProgress>({ answeredCount: 0, playerCount: 0 });
   const prevQuestionIdRef = useRef<string | null>(null);
+
+  // Reuse the permanent student identity so the name never has to be re-entered.
+  useEffect(() => {
+    const identity = getStudentIdentity();
+    if (identity?.name) {
+      setUsername(identity.name);
+      setStep("avatar");
+    }
+  }, []);
 
   useEffect(() => {
     const refresh = () => {
@@ -251,6 +261,8 @@ function PlayPage() {
     if (!room) return;
     const trimmed = username.trim();
     if (trimmed.length < 2 || trimmed.length > 20) return toast.error(t("play.pseudoLen"));
+    // Persist the display name permanently for all future rooms.
+    saveStudentName(trimmed);
     setStep("avatar");
   };
 

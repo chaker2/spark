@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Home, Gamepad2, Folder, Trophy, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield, User as UserIcon } from "lucide-react";
+import { Home, Gamepad2, Folder, HelpCircle, LogIn, UserPlus, Menu, X, LayoutDashboard, LogOut, Shield, User as UserIcon } from "lucide-react";
 import { SparkLogo } from "./SparkLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SignupModal } from "./SignupModal";
@@ -29,7 +29,6 @@ export function Header() {
     { key: "home", label: t("nav.home"), icon: Home, to: "/" as const },
     { key: "games", label: t("nav.games"), icon: Gamepad2, to: "/games" as const },
     { key: "mygames", label: t("nav.myGames"), icon: Folder, to: "/my-games" as const },
-    { key: "leaderboard", label: t("nav.leaderboard"), icon: Trophy, to: "/ranking" as const },
     { key: "help", label: t("nav.help"), icon: HelpCircle, to: "/help" as const },
   ];
 
