@@ -131,11 +131,13 @@ export function SignupModal({ open, onClose }: { open: boolean; onClose: () => v
               placeholder={t("signup.email")}
               className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
             />
-            <input
-              type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("signup.password")}
-              className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
-            />
+            {role === "teacher" && (
+              <input
+                type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("signup.password")}
+                className="w-full h-12 rounded-2xl border-2 border-border bg-background px-4 font-semibold focus:outline-none focus:border-primary transition"
+              />
+            )}
             <button
               type="submit" disabled={busy}
               className="w-full h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold shadow-pop hover:shadow-float hover:-translate-y-0.5 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
