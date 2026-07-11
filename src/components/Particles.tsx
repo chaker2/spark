@@ -36,11 +36,12 @@ export function Particles({ count = 18 }: { count?: number }) {
     [count],
   );
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true" suppressHydrationWarning>
       {items.map(({ Icon, color, top, left, size, delay, duration, opacity, i }) => (
         <div
           key={i}
           className={`absolute animate-float ${color}`}
+          suppressHydrationWarning
           style={{
             top: `${top}%`,
             left: `${left}%`,

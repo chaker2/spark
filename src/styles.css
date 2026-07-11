@@ -146,6 +146,89 @@
   }
 }
 
+.category-background {
+  --category-fit-width: min(100vw, 150vh);
+  --category-fit-height: min(100vh, 66.6667vw);
+  --category-side-width: max(0px, calc((100vw - var(--category-fit-width)) / 2));
+  --category-top-height: max(0px, calc((100vh - var(--category-fit-height)) / 2));
+}
+
+.category-background__base,
+.category-background__edge,
+.category-background__artwork {
+  user-select: none;
+}
+
+.category-background__base {
+  position: absolute;
+  inset: -18px;
+  background-image: var(--category-background-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(18px);
+  opacity: 0.22;
+  transform: scale(1.03);
+}
+
+.category-background__artwork {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--category-fit-width);
+  height: var(--category-fit-height);
+  max-width: none;
+  transform: translate(-50%, -50%);
+  object-fit: fill;
+  object-position: center;
+}
+
+.category-background__edge {
+  position: absolute;
+  background-image: var(--category-background-image);
+  background-size: var(--category-fit-width) var(--category-fit-height);
+  opacity: 1;
+}
+
+.category-background__edge--left,
+.category-background__edge--right {
+  top: calc((100vh - var(--category-fit-height)) / 2);
+  width: var(--category-side-width);
+  height: var(--category-fit-height);
+  background-repeat: repeat-x;
+}
+
+.category-background__edge--left {
+  left: 0;
+  background-position: left center;
+  transform: scaleX(-1);
+}
+
+.category-background__edge--right {
+  right: 0;
+  background-position: right center;
+  transform: scaleX(-1);
+}
+
+.category-background__edge--top,
+.category-background__edge--bottom {
+  left: calc((100vw - var(--category-fit-width)) / 2);
+  width: var(--category-fit-width);
+  height: var(--category-top-height);
+  background-repeat: repeat-y;
+}
+
+.category-background__edge--top {
+  top: 0;
+  background-position: center top;
+  transform: scaleY(-1);
+}
+
+.category-background__edge--bottom {
+  bottom: 0;
+  background-position: center bottom;
+  transform: scaleY(-1);
+}
+
 @keyframes float-y {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-18px) rotate(2deg); }
