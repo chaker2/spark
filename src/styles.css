@@ -147,8 +147,8 @@
 }
 
 .category-background {
-  --category-fit-width: min(100vw, 150vh);
-  --category-fit-height: min(100vh, 66.6667vw);
+  --category-fit-width: min(100vw, calc(100vh * var(--category-background-aspect)));
+  --category-fit-height: min(100vh, calc(100vw / var(--category-background-aspect)));
   --category-side-width: max(0px, calc((100vw - var(--category-fit-width)) / 2));
   --category-top-height: max(0px, calc((100vh - var(--category-fit-height)) / 2));
 }
