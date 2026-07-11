@@ -7,6 +7,7 @@ import physicsAsset from "@/assets/physics.png.asset.json";
 import scienceAsset from "@/assets/science.png.asset.json";
 import islamicAsset from "@/assets/islamic-education.png.asset.json";
 import { CATEGORY_KEYS, type CategoryKey } from "@/lib/categories";
+import type { CSSProperties } from "react";
 
 const BACKGROUNDS: Record<CategoryKey, string> = {
   arabic: arabicAsset.url,
@@ -17,6 +18,17 @@ const BACKGROUNDS: Record<CategoryKey, string> = {
   physics: physicsAsset.url,
   science: scienceAsset.url,
   islamic: islamicAsset.url,
+};
+
+const BACKGROUND_ASPECTS: Record<CategoryKey, number> = {
+  arabic: 1536 / 1024,
+  english: 1459 / 972,
+  social: 1459 / 972,
+  french: 1459 / 972,
+  math: 1459 / 972,
+  physics: 1459 / 972,
+  science: 1459 / 972,
+  islamic: 1459 / 972,
 };
 
 const CATEGORY_ALIASES: Record<string, CategoryKey> = {
@@ -58,22 +70,28 @@ export function getCategoryBackground(category?: string | null) {
 
 export function CategoryBackground({ category, className = "" }: { category?: string | null; className?: string }) {
   const { key, imageUrl } = getCategoryBackground(category);
+  const style = {
+    "--category-background-image": `url(${imageUrl})`,
+    "--category-background-aspect": BACKGROUND_ASPECTS[key],
+  } as CSSProperties;
 
   return (
-    <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background ${className}`} aria-hidden data-category-background={key} data-background-url={imageUrl}>
-      {/* Blurred fill so side/letterbox padding matches the artwork instead of cropping it */}
+    <div
+      className={`category-background pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background ${className}`}
+      style={style}
+      aria-hidden
+      data-category-background={key}
+      data-background-url={imageUrl}
+    >
+      <div className="category-background__base" />
+      <div className="category-background__edge category-background__edge--left" />
+      <div className="category-background__edge category-background__edge--right" />
+      <div className="category-background__edge category-background__edge--top" />
+      <div className="category-background__edge category-background__edge--bottom" />
       <img
         src={imageUrl}
         alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl opacity-60"
-        draggable={false}
-        aria-hidden
-      />
-      {/* Full original artwork, never cropped or distorted */}
-      <img
-        src={imageUrl}
-        alt=""
-        className="relative h-full w-full object-contain object-center"
+        className="category-background__artwork"
         draggable={false}
       />
     </div>
