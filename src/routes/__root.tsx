@@ -123,8 +123,20 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   React.useEffect(() => {
-    import("@/i18n").then(({ restoreStoredLang }) => restoreStoredLang());
+    let cancelled = false;
+    let languageTimer: ReturnType<typeof window.setTimeout> | undefined;
+
+    import("@/i18n").then(({ restoreStoredLang }) => {
+      languageTimer = window.setTimeout(() => {
+        if (!cancelled) restoreStoredLang();
+      }, 300);
+    });
     import("@/lib/notify").then(({ installNetworkListeners }) => installNetworkListeners());
+
+    return () => {
+      cancelled = true;
+      if (languageTimer) window.clearTimeout(languageTimer);
+    };
   }, []);
 
   return (
