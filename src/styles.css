@@ -168,7 +168,7 @@
   transform: translateY(-50%);
   background-image: var(--category-outpaint-image);
   background-repeat: no-repeat;
-  background-size: calc(var(--category-fit-height) * 16 / 9) var(--category-fit-height);
+  background-size: max(calc(var(--category-fit-height) * 16 / 9), calc(var(--category-side-width) * 12.8)) auto;
   opacity: 1;
 }
 
