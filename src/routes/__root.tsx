@@ -124,7 +124,7 @@ function RootComponent() {
 
   React.useEffect(() => {
     let cancelled = false;
-    let languageTimer: ReturnType<typeof window.setTimeout> | undefined;
+    let languageTimer: number | undefined;
 
     import("@/i18n").then(({ restoreStoredLang }) => {
       languageTimer = window.setTimeout(() => {
