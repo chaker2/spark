@@ -84,10 +84,6 @@ export function CategoryBackground({ category, className = "" }: { category?: st
       data-background-url={imageUrl}
     >
       <div className="category-background__base" />
-      <div className="category-background__edge category-background__edge--left" />
-      <div className="category-background__edge category-background__edge--right" />
-      <div className="category-background__edge category-background__edge--top" />
-      <div className="category-background__edge category-background__edge--bottom" />
       <img
         src={imageUrl}
         alt=""
