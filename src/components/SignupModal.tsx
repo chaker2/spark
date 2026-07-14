@@ -65,7 +65,10 @@ export function SignupModal({ open, onClose }: { open: boolean; onClose: () => v
       } else if (role === "teacher") {
         const { error } = await supabase.auth.signUp({
           email, password,
-          options: { emailRedirectTo: `${window.location.origin}/teacher`, data: { full_name: name } },
+          options: {
+            emailRedirectTo: `${window.location.origin}/teacher`,
+            data: { display_name: name, full_name: name },
+          },
         });
         if (error) throw error;
         toast.success(t("signup.success"));

@@ -28,7 +28,6 @@ export function Header() {
   const navItems = [
     { key: "home", label: t("nav.home"), icon: Home, to: "/" as const },
     { key: "games", label: t("nav.games"), icon: Gamepad2, to: "/games" as const },
-    { key: "mygames", label: t("nav.myGames"), icon: Folder, to: "/my-games" as const },
     { key: "help", label: t("nav.help"), icon: HelpCircle, to: "/help" as const },
   ];
 

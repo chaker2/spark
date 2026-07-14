@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { AnswerDistribution } from "@/components/AnswerDistribution";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { TeacherBadge } from "@/components/TeacherBadge";
 
 type Room = {
   id: string;
@@ -327,6 +328,7 @@ function TeacherDashboard() {
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
             <SparkLogo />
             <div className="flex items-center gap-2 sm:gap-3">
+              <Link to="/" className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition">{t("nav.home")}</Link>
               <Link to="/my-games" className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition">{t("nav.myGames")}</Link>
               <button onClick={logout} className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition"><LogOut className="h-4 w-4" /> <span className="hidden sm:inline">{t("auth.logout")}</span></button>
             </div>
@@ -339,42 +341,74 @@ function TeacherDashboard() {
           </div>
 
           {!room ? (
-            <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 text-center animate-pop-in">
-              <div className="mx-auto h-20 w-20 rounded-3xl bg-primary-gradient grid place-items-center shadow-pop animate-float"><Sparkles className="h-9 w-9 text-primary-foreground" /></div>
-              <h2 className="mt-5 font-display text-2xl font-bold">{t("teacher.noActive")}</h2>
-              <p className="mt-2 text-muted-foreground">{t("teacher.pitch")}</p>
-              {quizzes.length === 0 ? (
-                <div className="mt-6">
-                  <p className="text-sm text-muted-foreground mb-3">{t("teacher.noQuiz")}</p>
-                  <Link to="/quiz/new" className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop"><Plus className="h-4 w-4" /> {t("mygames.create")}</Link>
+            <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-12 text-center animate-pop-in overflow-hidden relative">
+              <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-mint/15 blur-3xl" />
+              <div className="relative">
+                <div className="mx-auto h-24 w-24 rounded-3xl bg-primary-gradient grid place-items-center shadow-pop animate-float">
+                  <Sparkles className="h-11 w-11 text-primary-foreground" />
                 </div>
-              ) : (
-                <div className="mt-6 max-w-md mx-auto space-y-3">
-                  <label className="block text-left">
-                    <span className="text-sm font-semibold">{t("teacher.selectQuiz")}</span>
-                    <select value={selectedQuiz} onChange={(e) => setSelectedQuiz(e.target.value)} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-3 focus:border-primary focus:outline-none">
-                      {quizzes.map((q) => <option key={q.id} value={q.id}>{q.title}</option>)}
-                    </select>
-                  </label>
-                  <button onClick={createRoom} disabled={creating || !selectedQuiz} className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop hover:shadow-float transition flex items-center justify-center gap-2 disabled:opacity-60">
-                    {creating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />} {t("teacher.create")}
-                  </button>
+                <h2 className="mt-6 font-display text-3xl sm:text-4xl font-bold text-gradient-hero">
+                  {t("teacher.welcomeTitle")}
+                </h2>
+                <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
+                  {t("teacher.welcomeSubtitle")}
+                </p>
+
+                <div className="mt-8 grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
+                  <div className="rounded-2xl border border-border bg-card/60 p-4">
+                    <div className="h-9 w-9 rounded-lg bg-sky-soft text-primary grid place-items-center mb-2"><Plus className="h-4 w-4" /></div>
+                    <div className="font-display font-bold text-sm">{t("teacher.tip1Title")}</div>
+                    <p className="text-xs text-muted-foreground mt-1">{t("teacher.tip1Body")}</p>
+                  </div>
+                  <div className="rounded-2xl border border-border bg-card/60 p-4">
+                    <div className="h-9 w-9 rounded-lg bg-sky-soft text-primary grid place-items-center mb-2"><Play className="h-4 w-4" /></div>
+                    <div className="font-display font-bold text-sm">{t("teacher.tip2Title")}</div>
+                    <p className="text-xs text-muted-foreground mt-1">{t("teacher.tip2Body")}</p>
+                  </div>
+                  <div className="rounded-2xl border border-border bg-card/60 p-4">
+                    <div className="h-9 w-9 rounded-lg bg-sky-soft text-primary grid place-items-center mb-2"><Trophy className="h-4 w-4" /></div>
+                    <div className="font-display font-bold text-sm">{t("teacher.tip3Title")}</div>
+                    <p className="text-xs text-muted-foreground mt-1">{t("teacher.tip3Body")}</p>
+                  </div>
                 </div>
-              )}
+
+                {quizzes.length === 0 ? (
+                  <div className="mt-8">
+                    <p className="text-sm text-muted-foreground mb-3">{t("teacher.noQuiz")}</p>
+                    <Link to="/quiz/new" className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop hover:shadow-float hover:-translate-y-0.5 transition-all"><Plus className="h-4 w-4" /> {t("mygames.create")}</Link>
+                  </div>
+                ) : (
+                  <div className="mt-8 max-w-md mx-auto space-y-3">
+                    <label className="block text-left">
+                      <span className="text-sm font-semibold">{t("teacher.selectQuiz")}</span>
+                      <select value={selectedQuiz} onChange={(e) => setSelectedQuiz(e.target.value)} className="mt-1 w-full h-12 rounded-xl border-2 border-border bg-background px-3 focus:border-primary focus:outline-none">
+                        {quizzes.map((q) => <option key={q.id} value={q.id}>{q.title}</option>)}
+                      </select>
+                    </label>
+                    <button onClick={createRoom} disabled={creating || !selectedQuiz} className="w-full h-14 rounded-2xl bg-mint-gradient text-secondary-foreground font-display font-bold text-lg shadow-pop hover:shadow-float hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                      {creating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />} {t("teacher.create")}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ) : room.status === "waiting" ? (
             <div className="grid lg:grid-cols-2 gap-6 animate-pop-in">
               <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <TeacherBadge hostId={user.id} label={t("teacher.hostLabel")} />
+                </div>
                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{t("teacher.gameCode")}</p>
                 <div className="mt-4 game-code font-display text-5xl sm:text-7xl font-bold tracking-[0.2em] sm:tracking-[0.25em] tabular-nums">{room.code}</div>
                 <button onClick={copyCode} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-sky-soft text-primary px-4 py-2 text-sm font-bold"><Copy className="h-4 w-4" /> {t("teacher.copy")}</button>
                 <p className="mt-4 text-sm text-muted-foreground">{t("teacher.status")} : <span className="font-bold text-foreground">{t("teacher.waiting")}</span></p>
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   <button onClick={startGame} disabled={players.length === 0 || questions.length === 0} className="h-12 rounded-2xl bg-mint-gradient text-secondary-foreground font-bold shadow-pop hover:shadow-float transition flex items-center justify-center gap-2 disabled:opacity-50"><Play className="h-4 w-4" /> {t("teacher.start")}</button>
-                  <button onClick={closeRoom} className="h-12 rounded-2xl border-2 border-destructive text-destructive font-bold hover:bg-destructive/10 transition flex items-center justify-center gap-2"><X className="h-4 w-4" /> {t("teacher.end")}</button>
+                  <button onClick={() => { if (confirm(t("teacher.confirmEnd"))) closeRoom(); }} className="h-12 rounded-2xl border-2 border-destructive text-destructive font-bold hover:bg-destructive/10 transition flex items-center justify-center gap-2"><X className="h-4 w-4" /> {t("teacher.end")}</button>
                 </div>
                 <button onClick={clearAllPlayers} disabled={players.length === 0} className="mt-3 w-full h-11 rounded-2xl border-2 border-border font-bold flex items-center justify-center gap-2 hover:bg-accent transition disabled:opacity-50">
-                  <Trash2 className="h-4 w-4" /> Effacer tous les joueurs
+                  <Trash2 className="h-4 w-4" /> {t("teacher.clearPlayers")}
                 </button>
               </div>
               <PlayersPanel players={players} onKick={kickPlayer} t={t} />

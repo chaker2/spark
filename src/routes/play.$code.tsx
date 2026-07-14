@@ -13,12 +13,14 @@ import { getStudentIdentity, saveStudentName } from "@/lib/studentIdentity";
 import type { QuestionType } from "@/lib/questionTypes";
 import { CategoryBackground } from "@/components/CategoryBackground";
 import { PuzzleSortable } from "@/components/PuzzleSortable";
+import { TeacherBadge } from "@/components/TeacherBadge";
 
 type Room = {
   id: string;
   code: string;
   status: "waiting" | "active" | "ended";
   quiz_id: string | null;
+  host_id?: string | null;
   current_question_id: string | null;
   question_started_at: string | null;
   question_phase?: "idle" | "intro" | "answering" | "waiting" | "result" | "ended";
@@ -501,20 +503,24 @@ function PlayPage() {
               <p className="mt-3 text-muted-foreground">{t("play.waitingNext")}</p>
             </div>
           ) : (
-            <Lobby room={room} players={players} myPlayerId={myPlayerId} onLeave={() => navigate({ to: "/" })} t={t} />
-          )}
+            <Lobby room={room} players={players} myPlayerId={myPlayerId} onLeave={() => navigate({ to: "/" })} t={t} hostId={(room as any).host_id ?? null} />)}
         </main>
       </div>
     </div>
   );
 }
 
-function Lobby({ room, players, myPlayerId, onLeave, t }: any) {
+function Lobby({ room, players, myPlayerId, onLeave, t, hostId }: any) {
   return (
     <div className="rounded-3xl bg-card border border-border shadow-float p-6 sm:p-10 animate-pop-in">
       <div className="text-center">
         <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{t("play.waitingTitle")}</p>
         <div className="mt-2 game-code font-display text-3xl sm:text-4xl font-bold tracking-[0.25em] tabular-nums">{room.code}</div>
+        {hostId && (
+          <div className="mt-5 flex justify-center">
+            <TeacherBadge hostId={hostId} label={t("teacher.hostLabel")} />
+          </div>
+        )}
         <div className="mt-6 inline-flex items-center gap-3 rounded-2xl bg-sky-soft px-5 py-3">
           <Loader2 className="h-5 w-5 text-primary animate-spin" />
           <span className="font-semibold text-primary text-sm sm:text-base">{t("play.waitingFor")}</span>
