@@ -147,66 +147,17 @@
 }
 
 .category-background {
-  --category-fit-width: min(100vw, calc(100vh * var(--category-background-aspect)));
-  --category-fit-height: min(100vh, calc(100vw / var(--category-background-aspect)));
-  --category-side-width: max(0px, calc((100vw - var(--category-fit-width)) / 2));
-  --category-top-height: max(0px, calc((100vh - var(--category-fit-height)) / 2));
-  background:
-    linear-gradient(90deg, var(--category-edge-left) 0%, var(--category-edge-base) 34%, var(--category-edge-base) 66%, var(--category-edge-right) 100%);
+  background-color: var(--color-background);
 }
 
-.category-background__edge,
-.category-background__artwork {
-  user-select: none;
-}
-
-.category-background__edge {
-  position: absolute;
-  top: 50%;
-  width: var(--category-side-width);
-  height: var(--category-fit-height);
-  transform: translateY(-50%);
-  background-image: var(--category-outpaint-image);
-  background-repeat: no-repeat;
-  background-size: max(calc(var(--category-fit-height) * 16 / 9), calc(var(--category-side-width) * 12.8)) auto;
-  opacity: 1;
-}
-
-.category-background__edge--left {
-  left: 0;
-  background-position: left center;
-}
-
-.category-background__edge--right {
-  right: 0;
-  background-position: right center;
-}
-
-@media (orientation: portrait) {
-  .category-background {
-    background:
-      linear-gradient(180deg, var(--category-edge-base) 0%, transparent 32%, transparent 68%, var(--category-edge-base) 100%),
-      linear-gradient(90deg, var(--category-edge-left) 0%, var(--category-edge-base) 38%, var(--category-edge-base) 62%, var(--category-edge-right) 100%);
-  }
-
-  .category-background__edge {
-    display: none;
-  }
-}
-
-/* The original uploaded artwork is rendered as its own image layer and is never
-   flipped, mirrored, stretched, cropped, filtered, or otherwise altered. */
 .category-background__artwork {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--category-fit-width);
-  height: var(--category-fit-height);
-  max-width: none;
-  transform: translate(-50%, -50%);
-  object-fit: contain;
-  background-position: center;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
+  user-select: none;
 }
 
 
