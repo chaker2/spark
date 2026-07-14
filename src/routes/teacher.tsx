@@ -327,6 +327,7 @@ function TeacherDashboard() {
           <div className="mx-auto max-w-7xl rounded-3xl bg-card/80 backdrop-blur-md border border-border shadow-soft px-4 py-3 flex items-center justify-between">
             <SparkLogo />
             <div className="flex items-center gap-2 sm:gap-3">
+              <Link to="/" className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition">{t("nav.home")}</Link>
               <Link to="/my-games" className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition">{t("nav.myGames")}</Link>
               <button onClick={logout} className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold hover:bg-accent transition"><LogOut className="h-4 w-4" /> <span className="hidden sm:inline">{t("auth.logout")}</span></button>
             </div>
